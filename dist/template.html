@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Шаблон</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        img {
+            height: 80vh;
+            object-fit: contain;
+            display: flex;
+            justify-content: left;
+        }
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            text-decoration: none;
+            font-size: 20px;
+            color: #000;
+            background-color: #f0f0f0;
+            padding: 10px 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .back-button:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-button">← Назад</a>
+    <h1 id="title">Заголовок</h1>
+    <img id="image" src="" alt="Карта">
+    <script>
+        // Отримання параметрів з URL
+        const params = new URLSearchParams(window.location.search);
+        const title = params.get('title');
+        const image = params.get('image');
+
+        // Динамічне оновлення контенту
+        document.getElementById('title').textContent = title;
+        document.getElementById('image').src = `images/${image}`;
+        document.getElementById('image').alt = `Карта ${title}`;
+    </script>
+    <button id="startParsing">Запустити парсеринг</button>
+    <script src="scripts.js"></script>
+    <script>
+      document.getElementById("startParsing").addEventListener("click", () => {
+        getLatestVKPost();
+      });
+    </script>
+</body>
+</html>
