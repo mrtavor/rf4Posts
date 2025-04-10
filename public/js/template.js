@@ -1,3 +1,6 @@
+// template.js
+import { loadMapData, drawCircleOnMap } from './mapUtils.js';
+
 const urlParams = new URLSearchParams(window.location.search);
 const title = urlParams.get('title');
 const image = urlParams.get('image');
@@ -10,7 +13,7 @@ const normalizedTitle = normalize(title);
 
 const postsContainer = document.getElementById('posts-container');
 
-// 1. Завантажуємо список доступних файлів
+// Завантажуємо список доступних файлів
 fetch('data/posts_index.json')
   .then(res => {
     if (!res.ok) throw new Error('Не вдалося завантажити список файлів');
@@ -21,7 +24,7 @@ fetch('data/posts_index.json')
       throw new Error('Список файлів пустий');
     }
 
-    // 2. Сортуємо список за датою у зворотному порядку
+    // Сортуємо список за датою у зворотному порядку
     fileList.sort((a, b) => {
       const dateA = a.match(/\d{4}-\d{2}-\d{2}/);
       const dateB = b.match(/\d{4}-\d{2}-\d{2}/);
@@ -30,7 +33,7 @@ fetch('data/posts_index.json')
 
     const latestFile = fileList[0];
 
-    // 3. Завантажуємо найновіший JSON
+    // Завантажуємо найновіший JSON
     return fetch(`data/${latestFile}`);
   })
   .then(res => {
@@ -44,25 +47,51 @@ fetch('data/posts_index.json')
     });
 
     if (filtered.length === 0) {
-      postsContainer.innerHTML = `<p>Немає постів для цієї локації.</p>`;
+      postsContainer.innerHTML = '<p>Немає постів для цієї локації.</p>';
       return;
     }
 
-    filtered.forEach(post => {
-      const div = document.createElement('div');
-      div.className = 'post';
-      div.innerHTML = `
-        <h3>${post.fish}</h3>
-        <p><strong>Дата:</strong> ${post.date}</p>
-        <p><strong>Координати:</strong> ${post.coordinates}</p>
-        <p><strong>Кліпса:</strong> ${post.clip}</p>
-        <p>${post.description}</p>
-        <a href="${post.post_URL}" target="_blank">Посилання на пост</a>
-      `;
-      postsContainer.appendChild(div);
+    // Завантажуємо дані карти
+    loadMapData().then(mapData => {
+      filtered.forEach(post => {
+        const div = document.createElement('div');
+        div.className = 'post';
+        div.innerHTML = `
+          <h3>${post.fish}</h3>
+          <p><strong>Дата:</strong> ${post.date}</p>
+          <p><strong>Координати:</strong> ${post.coordinates}</p>
+          <p><strong>Кліпса:</strong> ${post.clip}</p>
+          <p>${post.description}</p>
+          <a href="${post.post_URL}" target="_blank">Посилання на пост</a>
+        `;
+        postsContainer.appendChild(div);
+
+        // Перевіряємо формат координат і парсимо їх
+        let gameCoords;
+        if (post.coordinates.includes(':')) {
+          // Формат координат 59:76
+          const [x, y] = post.coordinates.split(':').map(coord => parseFloat(coord.trim()));
+          gameCoords = { x, y };
+        } else if (post.coordinates.includes(',')) {
+          // Формат координат 59,76
+          const coords = post.coordinates.split(',').map(coord => parseFloat(coord.trim()));
+          gameCoords = { x: coords[0], y: coords[1] };
+        } else {
+          console.error('Невідомий формат координат:', post.coordinates);
+          return;
+        }
+
+        // Логування координат для перевірки
+        console.log('Парсинг координат:', gameCoords);
+
+        // Малюємо круг на карті
+        drawCircleOnMap('image', gameCoords, mapData);
+      });
+    }).catch(error => {
+      console.error('Помилка з даними карти:', error);
     });
   })
   .catch(error => {
     console.error('Помилка:', error);
-    postsContainer.innerHTML = `<p>Не вдалося завантажити пости.</p>`;
+    postsContainer.innerHTML = '<p>Не вдалося завантажити пости.</p>';
   });

@@ -78,3 +78,41 @@ img {
         .grid-item:hover {
             background-color: #e0e0e0;
         }
+
+
+/* Контейнер для карти */
+#map-container {
+    position: relative;
+    display: inline-block;
+    width: 100%; /* Адаптивна ширина */
+    height: auto;
+}
+
+/* Зображення карти */
+#image {
+    display: block;
+    width: 100%;
+    height: 100%;  /* Заповнює всю висоту */
+    object-fit: cover;  /* Масштабування без спотворення */
+    margin: auto;
+}
+
+/* Шар для крапок */
+#dots-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Крапки */
+.circle-marker {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+}

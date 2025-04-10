@@ -6,7 +6,7 @@ const path = require('path'); // Для роботи з шляхами
 const VK_SERVICE_KEY = "902c24b6902c24b6902c24b6f09302f59f9902c902c24b6f7d83e038215132524e85fe6"; // Ключ доступу
 const GROUP_ID = "161310162"; // Числовий ID групи
 const API_VERSION = "5.199";
-const TWO_HOURS_IN_SECONDS = 2 * 60 * 60; // 2 години в секундах
+const FOUR_HOURS_IN_SECONDS = 4 * 60 * 60; // 2 години в секундах
 
 // Шлях до папки для збереження JSON-файлів
 const DATA_FOLDER = path.resolve(__dirname, '../public/data'); // Шлях до папки public/data
@@ -55,7 +55,7 @@ async function fetchVKPosts() {
       const text = post.text;
 
       // Перевіряємо, чи пост не старший ніж 2 години
-      if (currentTime - post.date > TWO_HOURS_IN_SECONDS) {
+      if (currentTime - post.date > FOUR_HOURS_IN_SECONDS) {
         continue; // Пропускаємо пости старші за 2 години
       }
 
@@ -152,7 +152,7 @@ function getExistingPosts(filePath) {
 // Функція для запуску перевірки кожні 10 хвилин
 function startFetching() {
   fetchVKPosts(); // Виконуємо перший запит одразу
-  setInterval(fetchVKPosts, 10 * 60 * 1000); // Повторюємо кожні 10 хвилин
+  setInterval(fetchVKPosts, 20 * 60 * 1000); // Повторюємо кожні 10 хвилин
 }
 
 function updatePostsIndex() {
