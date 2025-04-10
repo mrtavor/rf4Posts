@@ -6,6 +6,27 @@ export function loadMapData() {
       });
 }
 
+export function syncDotsLayerSize(imageId) {
+    const img = document.getElementById(imageId);
+    const dotsLayer = document.getElementById('dots-layer');
+  
+    if (!img || !dotsLayer) return;
+  
+    // Перевіряємо, чи зображення вже завантажене
+    if (!img.complete) {
+      img.onload = () => syncDotsLayerSize(imageId);
+      return;
+    }
+  
+    const rect = img.getBoundingClientRect();
+  
+    dotsLayer.style.width = `${rect.width}px`;
+    dotsLayer.style.height = `${rect.height}px`;
+
+    console.log('image size:', img.clientWidth, img.clientHeight);
+    console.log('dots-layer set to:', dotsLayer.style.width, dotsLayer.style.height);
+  }
+
 export function drawCircleOnMap(imageId, gameCoords, mapData) {
     const img = document.getElementById(imageId);
     const dotsLayer = document.getElementById('dots-layer');
@@ -73,3 +94,16 @@ function normalizeFromURL() {
     const title = urlParams.get('title') || '';
     return normalize(title);
 }
+
+export function addCirclePoint(gameCoords) {
+  allPoints.push(gameCoords);
+}
+
+export function redrawAllPoints(imageId, mapData, allPoints) {
+    const dotsLayer = document.getElementById('dots-layer');
+    dotsLayer.innerHTML = ''; // Очистити старі точки
+  
+    allPoints.forEach(coords => {
+      drawCircleOnMap(imageId, coords, mapData);
+    });
+  }

@@ -1,5 +1,6 @@
 // template.js
-import { loadMapData, drawCircleOnMap } from './mapUtils.js';
+import { loadMapData, drawCircleOnMap, syncDotsLayerSize, redrawAllPoints } from './mapUtils.js';
+import { setupMouseCoordinateDisplay } from './mouseCoords.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const title = urlParams.get('title');
@@ -12,6 +13,8 @@ const normalize = str => str.toLowerCase().replace(/[^а-яa-z0-9]/gi, '');
 const normalizedTitle = normalize(title);
 
 const postsContainer = document.getElementById('posts-container');
+
+let allPoints = [];
 
 // Завантажуємо список доступних файлів
 fetch('data/posts_index.json')
@@ -84,9 +87,23 @@ fetch('data/posts_index.json')
         // Логування координат для перевірки
         console.log('Парсинг координат:', gameCoords);
 
+        // Синхронізація шару з крапками з розмірами зображення
+        syncDotsLayerSize('image');
+        // Повторна синхронізація при зміні розмірів
+        window.addEventListener('resize', () => syncDotsLayerSize('image'));
+        document.getElementById('image').addEventListener('load', () => syncDotsLayerSize('image'));
+        allPoints.push(gameCoords); // Зберігаємо координати
+        drawCircleOnMap('image', gameCoords, mapData);
         // Малюємо круг на карті
         drawCircleOnMap('image', gameCoords, mapData);
       });
+
+      window.addEventListener('resize', () => {
+        syncDotsLayerSize('image');
+        redrawAllPoints('image', mapData, allPoints);
+      });      
+
+      setupMouseCoordinateDisplay('image', mapData);
     }).catch(error => {
       console.error('Помилка з даними карти:', error);
     });

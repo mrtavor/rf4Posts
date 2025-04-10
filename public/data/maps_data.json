@@ -5,5 +5,40 @@
       "left_top": [30, 115],
       "right_bottom": [112, 33]
     }
+  },
+  {
+    "name": "рвьюнок",
+    "game_coords": {
+      "left_top": [45, 151],
+      "right_bottom": [142, 54]
+    }
+  },
+  {
+    "name": "озстарыйострог",
+    "game_coords": {
+      "left_top": [0, 83],
+      "right_bottom": [83, 0]
+    }
+  },
+  {
+    "name": "озянтарное",
+    "game_coords": {
+      "left_top": [0, 213],
+      "right_bottom": [194, 18]
+    }
+  },
+  {
+    "name": "озмедное",
+    "game_coords": {
+      "left_top": [24, 77],
+      "right_bottom": [78, 23]
+    }
+  },
+  {
+    "name": "норвежскоеморе",
+    "game_coords": {
+      "left_top": [0, 1037],
+      "right_bottom": [1037, 0]
+    }
   }
 ]
