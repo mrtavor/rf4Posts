@@ -1,5 +1,6 @@
 body {
     font-family: Arial, sans-serif;
+    margin: 0;
 }
 .left-section {
     flex: 2;
@@ -10,11 +11,19 @@ img {
     object-fit: contain;
 }
 
+.container {
+    display: flex;
+    max-width: 1600px;
+    height: 88vh;
+    justify-content: center;
+}
+
 .header {
     display: flex;
     /* justify-content: center; */
     align-items: center;
     gap: 10px;
+    padding: 0 20px;
 }
 
 #subTitle{
@@ -38,6 +47,21 @@ img {
 .back-button:hover {
     background-color: #e0e0e0;
 }
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 20px;
+    min-width: 70%;
+}
+
+.grid-container a {
+    text-decoration: none;
+    color: black;
+    text-align: center;
+}
+
 .right-section {
     flex: 1;
     padding: 20px;
@@ -124,10 +148,68 @@ img {
 /* Крапки */
 .circle-marker {
     position: absolute;
-    width: 10px;
-    height: 10px;
-    background-color: red;
-    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background-color: rgb(185, 64, 64);
+    border-radius: 10%;
     transform: translate(-50%, -50%);
     pointer-events: none;
+    border: 1px solid #290b0b;
+}
+
+/* Стилі для точок на карті */
+.map-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: rgb(185, 64, 64);
+    border-radius: 50%;
+    border: 1px solid #290b0b;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    transition: all 0.5s ease;
+    z-index: 10;
+}
+
+/* Стилі для підсвіченої точки */
+.highlighted-dot {
+    position: absolute;
+    width: 17px;
+    height: 17px;
+    background-color: #54c47a;
+    border-radius: 50%;
+    border: 2px solid #1b3d26;
+    box-shadow: 0 0 10px rgba(43, 43, 43, 0.208);
+    z-index: 1000;
+    pointer-events: none;
+    transform: translate(-50%, -50%);
+    transition: all 0.8s ease;
+}
+
+/* Стилі для активної точки при наведенні на пост */
+.post:hover ~ #dots-layer .map-dot[data-coord-x="${post.dataset.coordX}"][data-coord-y="${post.dataset.coordY}"],
+.post.active ~ #dots-layer .map-dot[data-coord-x="${post.dataset.coordX}"][data-coord-y="${post.dataset.coordY}"] {
+    width: 20px;
+    height: 20px;
+    background-color: #54c47a;
+    border-radius: 70%;
+    border: 2px solid #1b3d26;
+    box-shadow: 0 0 10px rgba(43, 43, 43, 0.208);
+    z-index: 1000;
+}
+
+.post {
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.post:hover {
+  background-color: #f5f5f5;
+}
+
+.footer {
+    background: #f5f5f5;
+    padding: 20px 20px;
+    justify-content: center;
+    display: flex;
 }

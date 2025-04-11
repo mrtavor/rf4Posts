@@ -1,6 +1,7 @@
 // template.js
 import { loadMapData, drawCircleOnMap, syncDotsLayerSize, redrawAllPoints } from './mapUtils.js';
 import { setupMouseCoordinateDisplay } from './mouseCoords.js';
+import { setupPostHoverHighlight } from './postHoverHandler.js';
 
 const urlParams = new URLSearchParams(window.location.search);
 const title = urlParams.get('title');
@@ -31,13 +32,13 @@ fetch('data/posts_index.json')
     fileList.sort((a, b) => {
       const dateA = a.match(/\d{4}-\d{2}-\d{2}/);
       const dateB = b.match(/\d{4}-\d{2}-\d{2}/);
-      return dateB[0].localeCompare(dateA[0]); // найновіший буде перший
+      return dateB[0].localeCompare(dateA[0]);
     });
 
     const latestFile = fileList[0];
 
     // Завантажуємо найновіший JSON
-    return fetch(`data/${latestFile}`);
+    return fetch(`data/posts/${latestFile}`);
   })
   .then(res => {
     if (!res.ok) throw new Error('Не вдалося завантажити файл з постами');
@@ -48,14 +49,19 @@ fetch('data/posts_index.json')
       const postMapNorm = normalize(post.map);
       return postMapNorm.includes(normalizedTitle) || normalizedTitle.includes(postMapNorm);
     });
-
-    if (filtered.length === 0) {
-      postsContainer.innerHTML = '<p>Немає постів для цієї локації.</p>';
-      return;
-    }
-
-    // Завантажуємо дані карти
+  
     loadMapData().then(mapData => {
+      // Зберігаємо дані карти для використання в підсвітці
+      window.currentMapData = mapData;
+
+      setupMouseCoordinateDisplay('image', mapData);
+
+      if (filtered.length === 0) {
+        postsContainer.innerHTML = '<p>Немає постів для цієї локації.</p>';
+        return;
+      }
+
+
       filtered.forEach(post => {
         const div = document.createElement('div');
         div.className = 'post';
@@ -67,48 +73,54 @@ fetch('data/posts_index.json')
           <p>${post.description}</p>
           <a href="${post.post_URL}" target="_blank">Посилання на пост</a>
         `;
-        postsContainer.appendChild(div);
-
-        // Перевіряємо формат координат і парсимо їх
-        let gameCoords;
-        if (post.coordinates.includes(':')) {
-          // Формат координат 59:76
-          const [x, y] = post.coordinates.split(':').map(coord => parseFloat(coord.trim()));
-          gameCoords = { x, y };
-        } else if (post.coordinates.includes(',')) {
-          // Формат координат 59,76
-          const coords = post.coordinates.split(',').map(coord => parseFloat(coord.trim()));
-          gameCoords = { x: coords[0], y: coords[1] };
-        } else {
-          console.error('Невідомий формат координат:', post.coordinates);
-          return;
+        
+        // Додаємо атрибут з координатами для подальшого використання
+        const coords = extractValidCoords(post.coordinates);
+        if (coords.length > 0) {
+          div.dataset.coords = JSON.stringify(coords[0]);
         }
-
-        // Логування координат для перевірки
-        console.log('Парсинг координат:', gameCoords);
-
-        // Синхронізація шару з крапками з розмірами зображення
-        syncDotsLayerSize('image');
-        // Повторна синхронізація при зміні розмірів
-        window.addEventListener('resize', () => syncDotsLayerSize('image'));
-        document.getElementById('image').addEventListener('load', () => syncDotsLayerSize('image'));
-        allPoints.push(gameCoords); // Зберігаємо координати
-        drawCircleOnMap('image', gameCoords, mapData);
-        // Малюємо круг на карті
-        drawCircleOnMap('image', gameCoords, mapData);
+        
+        postsContainer.appendChild(div);
       });
 
+      // Малюємо всі точки на карті
+      filtered.forEach(post => {
+        const validCoords = extractValidCoords(post.coordinates);
+        validCoords.forEach(coord => {
+          allPoints.push(coord);
+          drawCircleOnMap('image', coord, mapData);
+        });
+      });
+
+      syncDotsLayerSize('image');
       window.addEventListener('resize', () => {
         syncDotsLayerSize('image');
         redrawAllPoints('image', mapData, allPoints);
-      });      
-
+      });
+      
       setupMouseCoordinateDisplay('image', mapData);
+      setupPostHoverHighlight(); // Ініціалізуємо підсвітку точок
     }).catch(error => {
-      console.error('Помилка з даними карти:', error);
+      console.error('Помилка карти:', error);
     });
   })
   .catch(error => {
-    console.error('Помилка:', error);
-    postsContainer.innerHTML = '<p>Не вдалося завантажити пости.</p>';
+    console.error('Помилка завантаження:', error);
+    postsContainer.innerHTML = '<p>Помилка завантаження даних.</p>';
   });
+
+// Функція для витягування координат
+function extractValidCoords(text) {
+  const coordPattern = /\b(\d{1,3})[:,\s](\d{1,3})\b/g;
+  const matches = [];
+  let match;
+  
+  while ((match = coordPattern.exec(text)) !== null) {
+    const x = parseFloat(match[1]);
+    const y = parseFloat(match[2]);
+    if (!isNaN(x) && !isNaN(y)) {
+      matches.push({ x, y });
+    }
+  }
+  return matches;
+}

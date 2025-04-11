@@ -42,11 +42,6 @@ export function drawCircleOnMap(imageId, gameCoords, mapData) {
 
     const { left_top, right_bottom } = mapInfo.game_coords;
 
-    // Логування даних перед обчисленнями
-    console.log('Дані мапи:', mapInfo);
-    console.log('left_top:', left_top, 'right_bottom:', right_bottom);
-    console.log('gameCoords:', gameCoords);
-    console.log('maxY:', right_bottom[1], 'minY:', left_top[1]);
 
     // Отримуємо розміри карти з урахуванням реальних розмірів на сторінці
     const mapRect = img.getBoundingClientRect();
@@ -71,16 +66,18 @@ export function drawCircleOnMap(imageId, gameCoords, mapData) {
 
     // Створення кружечка
     const circle = document.createElement('div');
-    circle.className = 'circle-marker';
     circle.style.position = 'absolute';
-    circle.style.width = '10px';
-    circle.style.height = '10px';
-    circle.style.borderRadius = '50%';
-    circle.style.backgroundColor = 'red';
+    circle.style.width = '13px';
+    circle.style.height = '13px';
+    circle.style.backgroundColor = 'rgb(185, 64, 64)';
+    circle.style.borderRadius = '60%';
+    circle.style.transform = 'translate(-50%, -50%)';
+    circle.style.pointerEvents = 'none';
+    circle.style.border = '2px solid #290b0b';
     circle.style.left = `${x_pixel}px`;
     circle.style.top = `${y_pixel}px`;
-    circle.style.pointerEvents = 'none';
 
+    // Додаємо кружечок на шар з крапками
     dotsLayer.appendChild(circle);
 }
 

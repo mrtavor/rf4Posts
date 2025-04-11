@@ -2,8 +2,8 @@
   {
     "name": "озкомариное",
     "game_coords": {
-      "left_top": [30, 115],
-      "right_bottom": [112, 33]
+      "left_top": [30, 116],
+      "right_bottom": [112, 34]
     }
   },
   {
@@ -16,14 +16,91 @@
   {
     "name": "озстарыйострог",
     "game_coords": {
-      "left_top": [0, 83],
-      "right_bottom": [83, 0]
+      "left_top": [-2, 83],
+      "right_bottom": [83, -2]
+    }
+  },
+  {
+    "name": "рбелая",
+    "game_coords": {
+      "left_top": [-1, 107],
+      "right_bottom": [114, -8]
+    }
+  },
+  {
+    "name": "озкуори",
+    "game_coords": {
+      "left_top": [53, 149],
+      "right_bottom": [149, 53]
+    }
+  },
+  {
+    "name": "озмедвежье",
+    "game_coords": {
+      "left_top": [5, 93],
+      "right_bottom": [95, 3]
+    }
+  },
+  {
+    "name": "рволхов",
+    "game_coords": {
+      "left_top": [-7, 208],
+      "right_bottom": [210, -9]
+    }
+  },
+  {
+    "name": "рсеверскийдонец",
+    "game_coords": {
+      "left_top": [5, 194],
+      "right_bottom": [196, 4]
+    }
+  },
+  {
+    "name": "рсура",
+    "game_coords": {
+      "left_top": [-5, 165],
+      "right_bottom": [163, -2]
+    }
+  },
+  {
+    "name": "ладожскоеоз",
+    "game_coords": {
+      "left_top": [5, 97],
+      "right_bottom": [102, -0.2]
+    }
+  },
+  {
+    "name": "ладожскийархипелаг",
+    "game_coords": {
+      "left_top": [-24, 625],
+      "right_bottom": [625, -26]
+    }
+  },
+  {
+    "name": "рахтуба",
+    "game_coords": {
+      "left_top": [-6, 207],
+      "right_bottom": [208, -8]
+    }
+  },
+  {
+    "name": "рнижняятунгуска",
+    "game_coords": {
+      "left_top": [0, 251],
+      "right_bottom": [251, 0]
+    }
+  },
+  {
+    "name": "ряма",
+    "game_coords": {
+      "left_top": [-11, 311],
+      "right_bottom": [310, -12]
     }
   },
   {
     "name": "озянтарное",
     "game_coords": {
-      "left_top": [0, 213],
+      "left_top": [-2, 213],
       "right_bottom": [194, 18]
     }
   },
@@ -37,8 +114,8 @@
   {
     "name": "норвежскоеморе",
     "game_coords": {
-      "left_top": [0, 1037],
-      "right_bottom": [1037, 0]
+      "left_top": [-39, 1037],
+      "right_bottom": [1037, -41]
     }
   }
 ]
