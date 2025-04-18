@@ -1,0 +1,105 @@
+#index-info-container {
+    display: flex;
+    justify-content: center;
+    height: calc(100vh - 100px);
+    width: 100%;
+    padding: 20px 15%;
+    gap: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    min-width: 70%;
+}
+
+.grid-item {
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    border-radius: 18px;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    color: #fff;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 24px;
+    text-align: center;
+    padding: 15px;
+    max-width: 400px;
+    min-width: 200px;
+}
+
+.grid-item:hover::before {
+    transform: scale(1.03);
+}
+
+.grid-item::before {
+    content: attr(id);
+    background: #6392b2;
+    box-shadow: 0 4px 12px rgba(48, 106, 150, 0.5);
+    padding: 7px 12px;
+    font-weight: 600;
+    font-size: 18px;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+#adds {
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 18px;
+    padding: 20px;
+    width: 18vw;
+    min-width: 280px;
+    text-align: center;
+    align-items: center;
+    font-size: 32px;
+    font-weight: 600;
+    color: #303030;
+}
+
+.welcome-popup {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 99999;
+    background: #fff;
+    color: #222;
+    border-radius: 12px;
+    box-shadow: 0 4px 24px #0002;
+    padding: 24px 28px 20px 24px;
+    max-width: 340px;
+    min-width: 220px;
+    font-size: 1.05em;
+    animation: popup-in 0.3s;
+}
+@keyframes popup-in {
+    from { opacity: 0; transform: translateY(40px);}
+    to   { opacity: 1; transform: translateY(0);}
+}
+.welcome-popup-content h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.2em;
+}
+.welcome-popup-content p {
+    margin-bottom: 18px;
+    line-height: 1.5;
+}
+.welcome-popup-ok {
+    background: #4683c4;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 7px 22px;
+    font-size: 1em;
+    cursor: pointer;
+    float: right;
+    transition: background 0.2s;
+}
+.welcome-popup-ok:hover {
+    background: #3566a3;
+}

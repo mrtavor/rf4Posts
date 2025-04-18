@@ -1,0 +1,98 @@
+// Поп-ап с информацией об обновлении после деплоя
+
+// Функция для проверки нужно ли показывать поп-ап с информацией
+export function checkReleaseNotes() {
+    const VERSION_STORAGE_KEY = 'rf4posts_last_seen_version';
+    
+    // Получаем версию и примечания к релизу
+    fetch('data/release-notes.json?cacheBust=' + Date.now())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Не удалось получить примечания к релизу');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const { version, notes, details_url } = data;
+            const lastSeenVersion = localStorage.getItem(VERSION_STORAGE_KEY);
+            
+            // Если версия изменилась или поп-ап еще не показывали для текущей версии
+            if (version && (!lastSeenVersion || lastSeenVersion !== version)) {
+                showReleaseNotesPopup(version, notes, details_url);
+                localStorage.setItem(VERSION_STORAGE_KEY, version);
+            }
+        })
+        .catch(error => {
+            // Если нужно тестирование поп-апа, раскомментируйте код ниже
+            /*
+            const testData = {
+                version: "1.1.9",
+                notes: [
+                    "Добавлен зум для карты",
+                    "Добавленая функция ввода координат для поиска их на карте",
+                    "Исправлена ошибка загрузки примечаний к релизу"
+                ],
+                details_url: "/versions.html"
+            };
+            
+            showReleaseNotesPopup(testData.version, testData.notes, testData.details_url);
+            */
+        });
+}
+
+// Функция для отображения поп-апа с примечаниями к релизу
+function showReleaseNotesPopup(version, notes, detailsUrl) {
+    if (document.getElementById('release-notes-popup')) return;
+    
+    // Создаем поп-ап
+    const popup = document.createElement('div');
+    popup.id = 'release-notes-popup';
+    popup.className = 'release-notes-popup';
+    
+    // Создаем HTML для списка примечаний
+    let notesHtml = '';
+    if (notes && notes.length) {
+        notesHtml = '<ul class="release-notes-list">';
+        notes.forEach(note => {
+            notesHtml += `<li>${note}</li>`;
+        });
+        notesHtml += '</ul>';
+    } else {
+        notesHtml = '<p>Обновлено до версии ' + version + '</p>';
+    }
+    
+    // Наполняем поп-ап
+    popup.innerHTML = `
+        <div class="release-notes-content">
+            <h3>Обновление сайта <span class="version-tag">v${version}</span></h3>
+            <div class="release-notes-body">
+                ${notesHtml}
+            </div>
+            <div class="release-notes-buttons">
+                <button id="release-notes-ok" class="release-notes-btn ok-btn">ОК</button>
+                ${detailsUrl ? `<button id="release-notes-more" class="release-notes-btn more-btn">Подробнее</button>` : ''}
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(popup);
+    
+    // Обработчики событий для кнопок
+    document.getElementById('release-notes-ok').addEventListener('click', () => {
+        popup.remove();
+    });
+    
+    if (detailsUrl) {
+        document.getElementById('release-notes-more').addEventListener('click', () => {
+            window.open(detailsUrl, '_blank');
+            popup.remove();
+        });
+    }
+}
+
+// Автоматически проверяем при загрузке страницы
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        checkReleaseNotes();
+    }, 1000); // Задержка в 1 секунду для загрузки основного контента
+}); 
