@@ -1,9 +1,9 @@
-// public/js/versionChecker.js
+// public/js/version-management/versionChecker.js
 
 export function startVersionChecker(options = {}) {
     const {
-        versionUrl = '/data/version.json',
-        checkInterval = 1 * 60 * 1000 // 5 хвилин
+        versionUrl = '/data/config/version.json',
+        checkInterval = 5 * 60 * 1000 // 5 хвилин
     } = options;
 
     let currentVersion = null;
@@ -23,13 +23,17 @@ export function startVersionChecker(options = {}) {
             const data = await response.json();
             return data.version || null;
         } catch (e) {
+            console.error('Помилка при отриманні версії:', e);
             return null;
         }
     }
 
     async function checkForUpdate() {
         const latestVersion = await fetchVersion();
-        if (!latestVersion) return;
+        if (!latestVersion) {
+            console.error('Не вдалося отримати версію');
+            return;
+        }
 
         // Якщо це перша перевірка — оновлюємо currentVersion і показуємо на сторінці
         if (!currentVersion) {
@@ -43,6 +47,13 @@ export function startVersionChecker(options = {}) {
             showUpdateBanner(latestVersion);
         } else {
             removeUpdateBanner();
+        }
+    }
+
+    function removeUpdateBanner() {
+        const banner = document.getElementById('update-banner');
+        if (banner) {
+            banner.remove();
         }
     }
 
@@ -74,6 +85,23 @@ export function startVersionChecker(options = {}) {
             window.location.reload(true);
         };
     }
+
+    // Одразу показуємо версію при завантаженні
+    fetchVersion().then(version => {
+        if (version) {
+            currentVersion = version;
+            updateVersionDisplay(version);
+        }
+    });
+
+    // Перевіряємо оновлення періодично
+    setInterval(checkForUpdate, checkInterval);
+
+    return {
+        checkForUpdate,
+        fetchVersion,
+        updateVersionDisplay
+    };
 }
 
 export function showUpdateBanner(newVersion = 'Тестова версія') {
@@ -107,21 +135,34 @@ export function showUpdateBanner(newVersion = 'Тестова версія') {
     };
 }
 
-// Додаємо простий автозапуск для відображення версії на всіх сторінках
-(function() {
-    fetch('/data/version.json?cacheBust=' + Date.now())
-      .then(r => r.json())
-      .then(data => {
-        if (data.version) {
-          document.querySelectorAll('.version').forEach(elem => {
-            elem.textContent = 'v' + data.version;
-          });
-        }
-      });
-})();
-
-
-// Якщо скрипт підключений напряму, запускаємо автоматично
-if (typeof window !== 'undefined') {
-    startVersionChecker();
+// Додаємо функцію для негайного відображення версії
+function displayCurrentVersion() {
+    fetch('/data/config/version.json?cacheBust=' + Date.now())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Не вдалося отримати версію');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data && data.version) {
+                document.querySelectorAll('.version').forEach(elem => {
+                    elem.textContent = 'v' + data.version;
+                });
+            }
+        })
+        .catch(error => {
+            console.error('Помилка при отриманні версії:', error);
+        });
 }
+
+// Якщо сторінка вже завантажена, відображаємо версію
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+    displayCurrentVersion();
+} else {
+    // Інакше чекаємо завантаження DOM
+    document.addEventListener('DOMContentLoaded', displayCurrentVersion);
+}
+
+// Автоматично запускаємо перевірку версії
+const versionChecker = startVersionChecker();

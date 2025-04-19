@@ -1,5 +1,5 @@
 // Поп-ап для обнаружения неактивности пользователя или необходимости обновления версии
-import { showUpdateBanner } from './versionChecker.js';
+import { showUpdateBanner } from '../version-management/versionChecker.js';
 
 export function initInactivityCheck() {
     // Параметры
@@ -67,7 +67,7 @@ export function initInactivityCheck() {
     // Получить текущую версию с сервера
     async function fetchCurrentVersion() {
         try {
-            const response = await fetch('/data/version.json?cacheBust=' + Date.now());
+            const response = await fetch('/data/config/version.json?cacheBust=' + Date.now());
             if (!response.ok) return;
             
             const data = await response.json();

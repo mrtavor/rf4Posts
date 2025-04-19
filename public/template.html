@@ -12,12 +12,21 @@
   <link rel="stylesheet" href="styles/popup.css">
 </head>
 <body>
-  <script type="module" src="js/code-import.js"></script>
-  <script type="module" src="js/versionChecker.js"></script>
+  <script type="module" src="js/version-management/versionChecker.js"></script>
+  
   <div class="header">
-    <h1><a href="index.html">Точки ловли</a></h1>
+    <h1><a href="/home" alt="Назад на головну">Точки ловли</a></h1>
     <div class="version-container">
       <span class="version"></span>
+    </div>
+    <!-- <div class="menu-container">
+      <a href="/home" alt="Назад на главную">Главная</a>
+    </div> -->
+    <div id="telegram-channel-link">
+      <a href="https://t.me/rf4postts">
+          <img src="images/telegram_logo.svg">
+          <span>Телеграм канал</span>
+      </a>
     </div>
   </div>
   <div class="main-container">
@@ -58,9 +67,19 @@
   
   <div id="mouse-coords-tooltip" style="display:none"></div>
 
-  <script type="module" src="js/coords-input.js"></script>
+  <script type="module" src="js/maps/coords-input.js"></script>
   <script type="module" src="js/main.js"></script>
-  <script type="module" src="js/mapCoords.js"></script>
-  <script type="module" src="js/template.js"></script>
+  <script type="module" src="js/maps/mapCoords.js"></script>
+  <script type="module" src="js/pages/template.js"></script>
+  
+  <script type="module">
+    // Інітіалізуємо функції зуму та перетягування вручну
+    import { initZoom } from './js/maps/mapZoom.js';
+    import { initDrag } from './js/maps/mapDrag.js';
+    
+    initZoom();
+    initDrag();
+
+  </script>
 </body>
 </html>

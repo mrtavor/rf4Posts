@@ -1,6 +1,6 @@
-import { startVersionChecker } from './versionChecker.js';
-import { initInactivityCheck } from './inactivityPopup.js';
-import { checkReleaseNotes } from './releaseNotesPopup.js';
+import { startVersionChecker } from '../version-management/versionChecker.js';
+import { initInactivityCheck } from '../components/inactivityPopup.js';
+import { checkReleaseNotes } from '../components/releaseNotesPopup.js';
 
 // Ініціалізуємо основні функції
 document.addEventListener('DOMContentLoaded', () => {
@@ -15,9 +15,3 @@ document.addEventListener('DOMContentLoaded', () => {
   // Перевірка нових приміток до релізу
   checkReleaseNotes();
 });
-
-import { initZoom } from './mapZoom.js';
-import { initDrag } from './mapDrag.js';
-
-initZoom();
-initDrag();

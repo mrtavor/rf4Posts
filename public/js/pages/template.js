@@ -1,12 +1,12 @@
-import { mapsData } from './mapsData.js';
+import { mapsData } from '../maps/mapsData.js';
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore, collection, getDocs, limit, query, where, orderBy, startAfter } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { firebaseConfig } from './firebase-config.js';
+import { firebaseConfig } from '../utils/firebase-config.js';
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { loadMapData, syncDotsLayerSize, drawCircleOnMap, addCirclePoint, redrawAllPoints, extractCoordinates, getMouseGameCoords } from './mapCoords.js';
-import { enablePostHoverHighlight } from './postHoverHandler.js';
-import { startVersionChecker } from './versionChecker.js';
-import { setupCoordsInput } from './coords-input.js';
+import { loadMapData, syncDotsLayerSize, drawCircleOnMap, addCirclePoint, redrawAllPoints, extractCoordinates, getMouseGameCoords } from '../maps/mapCoords.js';
+import { enablePostHoverHighlight } from '../utils/postHoverHandler.js';
+import { startVersionChecker } from '../version-management/versionChecker.js';
+import { setupCoordsInput } from '../maps/coords-input.js';
 
 
 const app = initializeApp(firebaseConfig);
@@ -187,7 +187,7 @@ window.addEventListener('DOMContentLoaded', async function() {
     });
 
     startVersionChecker({
-        versionUrl: '/data/version.json',
+        versionUrl: '/data/config/version.json',
         checkInterval: 5 * 60 * 1000 // 5 минут
     });
 
@@ -208,4 +208,9 @@ async function fetchPostsFromFirestore(map, lastDoc = null, batchSize = 20) {
     const posts = [];
     snapshot.forEach(doc => posts.push(doc.data()));
     return { posts, lastDoc: snapshot.docs[snapshot.docs.length - 1] };
+}
+
+// Функція для повернення на головну сторінку
+function goHome() {
+    window.location.href = '/home';
 }

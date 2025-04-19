@@ -17,7 +17,7 @@ import {
     }
     
     // Встановлюємо курсор для контейнера
-    container.style.cursor = 'grab';
+    container.style.cursor = 'default';
     
     // Змінні для відстеження стану перетягування
     let isDragging = false;
@@ -43,7 +43,11 @@ import {
       
       // Встановлюємо стиль курсора і захоплення
       container.setPointerCapture(e.pointerId);
-      container.style.cursor = 'grabbing';
+      container.style.cursor = 'default';
+      // Додаємо клас для CSS-стилізації
+      container.classList.add('dragging');
+      // Додаємо клас до body, щоб встановити правильний курсор
+      document.body.classList.add('map-dragging');
       document.body.style.userSelect = 'none';
       e.preventDefault();
     }
@@ -113,7 +117,11 @@ import {
       
       isDragging = false;
       container.releasePointerCapture(e.pointerId);
-      container.style.cursor = 'grab';
+      container.style.cursor = 'default';
+      // Видаляємо клас dragging
+      container.classList.remove('dragging');
+      // Видаляємо клас з body
+      document.body.classList.remove('map-dragging');
       document.body.style.userSelect = '';
     }
     

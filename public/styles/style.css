@@ -32,6 +32,15 @@ a {
     color: #b0b0b0;
 }
 
+.menu-container {
+    margin-left: 60px;
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+}
+
+
+
 #telegram-channel-link {
     margin-left: auto;
     padding: 8px 15px 8px 15px;

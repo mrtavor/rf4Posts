@@ -188,10 +188,14 @@ function showCoordsError(message) {
     popup.className = 'coords-error-popup';
     document.body.appendChild(popup);
   }
-  
+  // Сховаємо popup успіху, якщо він є
+  const successPopup = document.getElementById('coords-success-popup');
+  if (successPopup) successPopup.style.display = 'none';
+
   popup.textContent = message;
   popup.style.display = 'block';
-  
+  popup.style.zIndex = 2000;
+
   // Скрыть сообщение через 3 секунды
   clearTimeout(popup._hideTimeout);
   popup._hideTimeout = setTimeout(() => {
@@ -205,12 +209,17 @@ function showCoordsSuccess(message) {
   if (!popup) {
     popup = document.createElement('div');
     popup.id = 'coords-success-popup';
+    popup.className = 'coords-success-popup';
     document.body.appendChild(popup);
   }
-  
+  // Сховаємо popup помилки, якщо він є
+  const errorPopup = document.getElementById('coords-error-popup');
+  if (errorPopup) errorPopup.style.display = 'none';
+
   popup.textContent = message;
   popup.style.display = 'block';
-  
+  popup.style.zIndex = 2000;
+
   // Скрыть сообщение через 2 секунды
   clearTimeout(popup._hideTimeout);
   popup._hideTimeout = setTimeout(() => {

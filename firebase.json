@@ -8,12 +8,28 @@
     ],
     "rewrites": [
       {
+        "source": "/home",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/home/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/versions",
+        "destination": "/versions_page.html"
+      },
+      {
+        "source": "/versions/**",
+        "destination": "/versions_page.html"
+      },
+      {
         "source": "**",
         "destination": "/index.html"
       }
     ],
     "predeploy": [
-      "node check-version.js"
+      "node scripts/deploy/check-version.js"
     ]
   },
   "functions": [

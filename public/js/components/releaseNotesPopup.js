@@ -5,7 +5,7 @@ export function checkReleaseNotes() {
     const VERSION_STORAGE_KEY = 'rf4posts_last_seen_version';
     
     // Получаем версию и примечания к релизу
-    fetch('data/release-notes.json?cacheBust=' + Date.now())
+    fetch('data/config/release-notes.json?cacheBust=' + Date.now())
         .then(response => {
             if (!response.ok) {
                 throw new Error('Не удалось получить примечания к релизу');
