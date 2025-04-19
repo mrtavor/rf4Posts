@@ -191,7 +191,12 @@ window.addEventListener('DOMContentLoaded', async function() {
         checkInterval: 5 * 60 * 1000 // 5 минут
     });
 
-    setupCoordsInput({ mapsData, mapData, title });
+    // Передаємо всі необхідні дані у setupCoordsInput
+    setupCoordsInput({ 
+        mapsData, 
+        mapData, 
+        title 
+    });
 });
 
 async function fetchPostsFromFirestore(map, lastDoc = null, batchSize = 20) {

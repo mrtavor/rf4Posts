@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles/posts.css">
   <link rel="stylesheet" href="styles/coordsInput-mapDrag.css">
   <link rel="stylesheet" href="styles/popup.css">
+  <link rel="stylesheet" href="styles/ruler.css">
 </head>
 <body>
   <script type="module" src="js/version-management/versionChecker.js"></script>
@@ -43,6 +44,13 @@
               <input type="number" id="coord-y" style="width:60px;" placeholder="Y">
               <button id="show-coord-btn" style="margin-left:8px;">Показать</button>
             </div>
+            <div id="ruler-switch-container" style="margin: 10px 0 0 0;">
+              <label class="switch">
+                <input type="checkbox" id="ruler-switch-checkbox">
+                <span class="slider"></span>
+              </label>
+              <span style="margin-left: 10px;">Рулетка</span>
+            </div>
             <div id="zoom-container">
               <img id="image" src="" alt="Карта">
               <div id="dots-layer"></div>
@@ -70,6 +78,7 @@
   <script type="module" src="js/maps/coords-input.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/maps/mapCoords.js"></script>
+  <script type="module" src="js/maps/ruler.js"></script>
   <script type="module" src="js/pages/template.js"></script>
   
   <script type="module">

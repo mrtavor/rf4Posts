@@ -3,7 +3,8 @@
       "name": "оз. Комариное",
       "game_coords": {
         "left_top": [30, 115],
-        "right_bottom": [112, 34]
+        "right_bottom": [112, 34],
+        "squareSize": 37
       },
       "mouse_coords": {
         "left_top": [30, 115],

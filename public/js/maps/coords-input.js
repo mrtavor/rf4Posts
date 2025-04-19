@@ -11,11 +11,17 @@ import {
 } from './mapCoords.js';
 import { mapsData } from './mapsData.js';
 
-export function setupCoordsInput() {
+export function setupCoordsInput(params) {
   // Получаем элементы интерфейса
   const coordXInput = document.getElementById('coord-x');
   const coordYInput = document.getElementById('coord-y');
   const showCoordBtn = document.getElementById('show-coord-btn');
+  
+  // Отримуємо параметри
+  const { mapData, title, mapsData: passedMapsData } = params || {};
+  
+  // Використовуємо передані дані або імпортовані з модуля
+  const mapsDataObj = passedMapsData || mapsData;
   
   if (!coordXInput || !coordYInput || !showCoordBtn) {
     console.error('Не найдены необходимые элементы ввода координат');
@@ -43,91 +49,104 @@ export function setupCoordsInput() {
   // Синхронизируем размер слоя точек с размером изображения
   syncDotsLayerSize('image');
   
-  // Загружаем данные карт
-  loadMapData()
-    .then(mapData => {
-      // Получаем название текущей карты из URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const title = urlParams.get('title') || '';
-      const mapName = mapsData[title]?.name;
-      
-      // Добавляем обработчик для кнопки "Показать"
-      showCoordBtn.addEventListener('click', () => {
-        const x = parseFloat(coordXInput.value);
-        const y = parseFloat(coordYInput.value);
+  // Используем полученные данные карты или загружаем, если их нет
+  if (mapData && title) {
+    console.log('Використовуємо передані дані карт для координат');
+    setupCoordinatesHandler(mapData, title, mapsDataObj);
+  } else {
+    // Загружаем данные карт если они не переданы
+    console.log('Завантажуємо дані карт для координат, бо їх не передано');
+    loadMapData()
+      .then(loadedMapData => {
+        // Получаем название текущей карты из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const loadedTitle = urlParams.get('title') || '';
         
-        if (isNaN(x) || isNaN(y)) {
-          showCoordsError('Введены некорректные координаты');
-          return;
-        }
-        
-        // Удаляем старую точку
-        const oldDot = document.getElementById('custom-blue-dot');
-        if (oldDot) oldDot.remove();
-        
-        // Проверяем, существует ли карта в данных
-        if (!mapName) {
-          showCoordsError('Не найдены данные о текущей карте');
-          return;
-        }
-        
-        // Находим информацию о карте
-        const mapInfo = mapData.find(m => m.name === mapName);
-        if (!mapInfo) {
-          showCoordsError('Не найдена информация о карте');
-          return;
-        }
-        
-        // Проверяем наличие координат карты
-        if (!mapInfo.game_coords) {
-          showCoordsError('Карта не содержит информацию об игровых координатах');
-          return;
-        }
-        
-        // Проверяем, находятся ли координаты в пределах карты
-        const { left_top, right_bottom } = mapInfo.game_coords;
-        const minX = left_top[0];
-        const maxX = right_bottom[0];
-        const maxY = left_top[1];
-        const minY = right_bottom[1];
-        
-        if (x < minX || x > maxX || y < minY || y > maxY) {
-          showCoordsError('Таких координат на карте нет');
-          return;
-        }
-        
-        // Создаем точку на карте
-        try {
-          const coords = { x, y };
-          
-          // Используем стандартную функцию для рисования точки и модифицируем ее
-          const dot = createCustomDot('image', coords, mapData, mapName);
-          
-          if (dot) {
-            showCoordsSuccess(`Точка создана на координатах X${x}, Y${y}`);
-          } else {
-            throw new Error('Не удалось создать точку');
-          }
-        } catch (error) {
-          console.error('Ошибка при создании точки:', error);
-          showCoordsError('Не удалось создать точку на карте');
-        }
+        console.log('Дані карт успішно завантажено для координат, карта:', loadedTitle);
+        setupCoordinatesHandler(loadedMapData, loadedTitle, mapsDataObj);
+      })
+      .catch(error => {
+        console.error('Ошибка загрузки данных карт:', error);
+        showCoordsError('Не удалось загрузить данные карт');
       });
+  }
+  
+  function setupCoordinatesHandler(mapData, title, mapsData) {
+    const mapName = mapsData[title]?.name;
+    
+    // Добавляем обработчик для кнопки "Показать"
+    showCoordBtn.addEventListener('click', () => {
+      const x = parseFloat(coordXInput.value);
+      const y = parseFloat(coordYInput.value);
       
-      // Обработчик нажатия Enter
-      function handleEnterKey(e) {
-        if (e.key === 'Enter') {
-          showCoordBtn.click();
-        }
+      if (isNaN(x) || isNaN(y)) {
+        showCoordsError('Введены некорректные координаты');
+        return;
       }
       
-      coordXInput.addEventListener('keyup', handleEnterKey);
-      coordYInput.addEventListener('keyup', handleEnterKey);
-    })
-    .catch(error => {
-      console.error('Ошибка загрузки данных карт:', error);
-      showCoordsError('Не удалось загрузить данные карт');
+      // Удаляем старую точку
+      const oldDot = document.getElementById('custom-blue-dot');
+      if (oldDot) oldDot.remove();
+      
+      // Проверяем, существует ли карта в данных
+      if (!mapName) {
+        showCoordsError('Не найдены данные о текущей карте');
+        return;
+      }
+      
+      // Находим информацию о карте
+      const mapInfo = mapData.find(m => m.name === mapName);
+      if (!mapInfo) {
+        showCoordsError('Не найдена информация о карте');
+        return;
+      }
+      
+      // Проверяем наличие координат карты
+      if (!mapInfo.game_coords) {
+        showCoordsError('Карта не содержит информацию об игровых координатах');
+        return;
+      }
+      
+      // Проверяем, находятся ли координаты в пределах карты
+      const { left_top, right_bottom } = mapInfo.game_coords;
+      const minX = left_top[0];
+      const maxX = right_bottom[0];
+      const maxY = left_top[1];
+      const minY = right_bottom[1];
+      
+      if (x < minX || x > maxX || y < minY || y > maxY) {
+        showCoordsError('Таких координат на карте нет');
+        return;
+      }
+      
+      // Создаем точку на карте
+      try {
+        const coords = { x, y };
+        
+        // Используем стандартную функцию для рисования точки и модифицируем ее
+        const dot = createCustomDot('image', coords, mapData, mapName);
+        
+        if (dot) {
+          showCoordsSuccess(`Точка создана на координатах X${x}, Y${y}`);
+        } else {
+          throw new Error('Не удалось создать точку');
+        }
+      } catch (error) {
+        console.error('Ошибка при создании точки:', error);
+        showCoordsError('Не удалось создать точку на карте');
+      }
     });
+    
+    // Обработчик нажатия Enter
+    function handleEnterKey(e) {
+      if (e.key === 'Enter') {
+        showCoordBtn.click();
+      }
+    }
+    
+    coordXInput.addEventListener('keyup', handleEnterKey);
+    coordYInput.addEventListener('keyup', handleEnterKey);
+  }
 }
 
 // Функция для создания собственной точки

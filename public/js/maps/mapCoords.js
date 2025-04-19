@@ -1,10 +1,54 @@
 // Загружает данные о картах из файла maps_data.json
 export function loadMapData() {
-    return fetch('data/maps_data.json')
-      .then(res => {
-        if (!res.ok) throw new Error('Не удалось загрузить данные карты');
-        return res.json();
-      });
+    // Визначаємо всі можливі шляхи до файлу
+    const possiblePaths = [
+        '/data/map-data/maps_data.json',            // абсолютний шлях
+        './data/map-data/maps_data.json',           // відносний шлях
+        '../data/map-data/maps_data.json',          // відносний шлях, якщо запит з підпапки
+        '../../data/map-data/maps_data.json',       // альтернативний відносний шлях
+        window.location.origin + '/data/map-data/maps_data.json' // повний URL
+    ];
+    
+    console.log('Спроба завантаження даних карт. Доступні шляхи:', possiblePaths);
+    
+    // Функція для перевірки і завантаження JSON
+    const tryFetch = (path, index = 0) => {
+        if (index >= possiblePaths.length) {
+            console.error('Не вдалося завантажити JSON з жодного шляху');
+            return Promise.resolve([]); // повертаємо пустий масив
+        }
+        
+        const currentPath = possiblePaths[index];
+        console.log(`Спроба ${index + 1}/${possiblePaths.length}: завантаження з ${currentPath}`);
+        
+        return fetch(currentPath)
+            .then(res => {
+                if (!res.ok) {
+                    console.warn(`Шлях ${currentPath} - помилка ${res.status}`);
+                    return tryFetch(null, index + 1);
+                }
+                console.log(`Успішно завантажено з ${currentPath}`);
+                return res.json().catch(err => {
+                    console.error(`Помилка парсингу JSON з ${currentPath}:`, err);
+                    return tryFetch(null, index + 1);
+                });
+            })
+            .catch(err => {
+                console.warn(`Помилка запиту до ${currentPath}:`, err);
+                return tryFetch(null, index + 1);
+            });
+    };
+    
+    return tryFetch(possiblePaths[0])
+        .then(data => {
+            if (Array.isArray(data) && data.length > 0) {
+                console.log(`Успішно завантажено дані для ${data.length} карт`);
+                return data;
+            } else {
+                console.warn('Завантажені дані порожні або не є масивом');
+                return [];
+            }
+        });
 }
 
 // Синхронизирует размеры слоя точек с размерами изображения карты
