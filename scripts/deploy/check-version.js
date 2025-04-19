@@ -129,9 +129,18 @@ function hasValidReleaseNotes(releaseData) {
 async function checkVersion() {
   console.log('✓ Начинаю проверку версии перед деплоем...');
   
+  // Пропускаємо перевірку версії в CI середовищі
+  if (process.env.CI === 'true') {
+    console.log("✓ CI environment detected. Skipping version check.");
+    runDeploy();
+    return;
+  }
+  
+  // Або пропускаємо, якщо встановлена змінна SKIP_VERSION_CHECK
   if (process.env.SKIP_VERSION_CHECK) {
-    console.log("Version check skipped");
-    process.exit(0); // Завершуємо скрипт одразу, якщо перевірку версії треба пропустити
+    console.log("✓ Version check skipped.");
+    runDeploy();
+    return;
   }
   
   // Проверяем время последнего деплоя
