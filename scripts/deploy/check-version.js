@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
@@ -127,6 +128,11 @@ function hasValidReleaseNotes(releaseData) {
 // Основная функция проверки
 async function checkVersion() {
   console.log('✓ Начинаю проверку версии перед деплоем...');
+  
+  if (process.env.SKIP_VERSION_CHECK) {
+    console.log("Version check skipped");
+    process.exit(0); // Завершуємо скрипт одразу, якщо перевірку версії треба пропустити
+  }
   
   // Проверяем время последнего деплоя
   if (checkLastDeployTime()) {
