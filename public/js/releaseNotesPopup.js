@@ -16,27 +16,47 @@ export function checkReleaseNotes() {
             const { version, notes, details_url } = data;
             const lastSeenVersion = localStorage.getItem(VERSION_STORAGE_KEY);
             
-            // Если версия изменилась или поп-ап еще не показывали для текущей версии
+            // Проверяем наличие заметок о релизе
+            // Проверяем строго, что массив не пустой и содержит непустые строки
+            // При этом игнорируем специальный символ "-", который означает "не показывать попап"
+            const hasReleaseNotes = notes && 
+                                   Array.isArray(notes) && 
+                                   notes.length > 0 && 
+                                   notes.some(note => {
+                                       // Проверяем, что заметка не пустая и не равна "-"
+                                       return note && 
+                                              typeof note === 'string' && 
+                                              note.trim() !== '' && 
+                                              note.trim() !== '-';
+                                   });
+            
+            // Специальная проверка на наличие символа "-"
+            const hasDashOnly = notes && 
+                               Array.isArray(notes) && 
+                               notes.length === 1 && 
+                               notes[0] && 
+                               typeof notes[0] === 'string' && 
+                               notes[0].trim() === '-';
+            
+            // Добавляем отладочный вывод
+            console.debug(`Release notes check: version=${version}, hasNotes=${hasReleaseNotes}, hasDashOnly=${hasDashOnly}, notes=${JSON.stringify(notes)}`);
+            
+            // Обновляем версию в локальном хранилище в любом случае
             if (version && (!lastSeenVersion || lastSeenVersion !== version)) {
-                showReleaseNotesPopup(version, notes, details_url);
                 localStorage.setItem(VERSION_STORAGE_KEY, version);
+            }
+            
+            // Показываем попап только если:
+            // 1. Версия изменилась или попап еще не показывался для текущей версии
+            // 2. Есть непустые заметки о релизе
+            // 3. В заметках нет символа "-"
+            if (version && (!lastSeenVersion || lastSeenVersion !== version) && hasReleaseNotes && !hasDashOnly) {
+                showReleaseNotesPopup(version, notes, details_url);
             }
         })
         .catch(error => {
-            // Если нужно тестирование поп-апа, раскомментируйте код ниже
-            /*
-            const testData = {
-                version: "1.1.9",
-                notes: [
-                    "Добавлен зум для карты",
-                    "Добавленая функция ввода координат для поиска их на карте",
-                    "Исправлена ошибка загрузки примечаний к релизу"
-                ],
-                details_url: "/versions.html"
-            };
-            
-            showReleaseNotesPopup(testData.version, testData.notes, testData.details_url);
-            */
+            console.error('Ошибка при проверке релизных заметок:', error);
+            // Код для тестирования попапа закомментирован
         });
 }
 
@@ -49,11 +69,19 @@ function showReleaseNotesPopup(version, notes, detailsUrl) {
     popup.id = 'release-notes-popup';
     popup.className = 'release-notes-popup';
     
+    // Фильтруем заметки, исключая пустые строки и символ "-"
+    const validNotes = notes.filter(note => 
+        note && 
+        typeof note === 'string' && 
+        note.trim() !== '' && 
+        note.trim() !== '-'
+    );
+    
     // Создаем HTML для списка примечаний
     let notesHtml = '';
-    if (notes && notes.length) {
+    if (validNotes.length > 0) {
         notesHtml = '<ul class="release-notes-list">';
-        notes.forEach(note => {
+        validNotes.forEach(note => {
             notesHtml += `<li>${note}</li>`;
         });
         notesHtml += '</ul>';
