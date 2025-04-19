@@ -1,0 +1,52 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/home",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/home/**",
+        "destination": "/index.html"
+      },
+      {
+        "source": "/versions",
+        "destination": "/versions_page.html"
+      },
+      {
+        "source": "/versions/**",
+        "destination": "/versions_page.html"
+      },
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "predeploy": [
+      "node scripts/deploy/check-version.js"
+    ]
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

@@ -1,0 +1,53 @@
+.post {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    margin-bottom: 18px;
+    padding: 16px 20px;
+    transition: box-shadow 0.2s;
+}
+.post:hover {
+    box-shadow: 0 4px 16px rgba(0,0,0,0.13);
+}
+.post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+.post-date {
+    color: #888;
+    font-size: 0.95em;
+}
+.post-link {
+    color: #1976d2;
+    text-decoration: none;
+    font-weight: bold;
+}
+.post-link:hover {
+    text-decoration: underline;
+}
+.post-body div {
+    margin-bottom: 4px;
+    font-size: 1.05em;
+}
+
+/* Стилізація скролбару */
+.right-section::-webkit-scrollbar {
+    width: 8px;
+}
+
+.right-section::-webkit-scrollbar-track {
+    background: transparent;
+    margin: 10px 0;
+}
+
+.right-section::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.right-section::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}

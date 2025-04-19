@@ -1,0 +1,189 @@
+[
+    {
+      "name": "оз. Комариное",
+      "game_coords": {
+        "left_top": [30, 115],
+        "right_bottom": [112, 34]
+      },
+      "mouse_coords": {
+        "left_top": [30, 115],
+        "right_bottom": [112, 34]
+      }
+    },
+    {
+      "name": "р. Вьюнок",
+      "game_coords": {
+        "left_top": [45, 150],
+        "right_bottom": [142, 54]
+      },
+      "mouse_coords": {
+        "left_top": [45, 150],
+        "right_bottom": [142, 54]
+      }
+    },
+    {
+      "name": "оз. Старый Острог",
+      "game_coords": {
+        "left_top": [-2, 83],
+        "right_bottom": [83, -2]
+      },
+      "mouse_coords": {
+        "left_top": [-2, 83],
+        "right_bottom": [83, -2]
+      }
+    },
+    {
+      "name": "р. Белая",
+      "game_coords": {
+        "left_top": [-1, 107],
+        "right_bottom": [114, -8]
+      },
+      "mouse_coords": {
+        "left_top": [-1, 107],
+        "right_bottom": [114, -8]
+      }
+    },
+    {
+      "name": "оз. Куори",
+      "game_coords": {
+        "left_top": [53, 149],
+        "right_bottom": [149, 53]
+      },
+      "mouse_coords": {
+        "left_top": [53, 149],
+        "right_bottom": [149, 53]
+      }
+    },
+    {
+      "name": "оз. Медвежье",
+      "game_coords": {
+        "left_top": [5, 93],
+        "right_bottom": [95, 3]
+      },
+      "mouse_coords": {
+        "left_top": [5, 93],
+        "right_bottom": [95, 3]
+      }
+    },
+    {
+      "name": "р. Волхов",
+      "game_coords": {
+        "left_top": [-7, 208],
+        "right_bottom": [210, -9]
+      },
+      "mouse_coords": {
+        "left_top": [-7, 208],
+        "right_bottom": [210, -9]
+      }
+    },
+    {
+      "name": "р. Северский Донец",
+      "game_coords": {
+        "left_top": [5, 194],
+        "right_bottom": [196, 4]
+      },
+      "mouse_coords": {
+        "left_top": [5, 194],
+        "right_bottom": [196, 4]
+      }
+    },
+    {
+      "name": "р. Сура",
+      "game_coords": {
+        "left_top": [-5, 165],
+        "right_bottom": [163, -2]
+      },
+      "mouse_coords": {
+        "left_top": [-5, 165],
+        "right_bottom": [163, -2]
+      }
+    },
+    {
+      "name": "Ладожское оз.",
+      "game_coords": {
+        "left_top": [5, 97],
+        "right_bottom": [102, -0.2]
+      },
+      "mouse_coords": {
+        "left_top": [5, 97],
+        "right_bottom": [102, -0.2]
+      }
+    },
+    {
+      "name": "Ладожский архипелаг",
+      "game_coords": {
+        "left_top": [-24, 625],
+        "right_bottom": [625, -26]
+      },
+      "mouse_coords": {
+        "left_top": [-24, 625],
+        "right_bottom": [625, -26]
+      }
+    },
+    {
+      "name": "р. Ахтуба",
+      "game_coords": {
+        "left_top": [-6, 207],
+        "right_bottom": [208, -8]
+      },
+      "mouse_coords": {
+        "left_top": [-6, 207],
+        "right_bottom": [208, -8]
+      }
+    },
+    {
+      "name": "р. Нижняя Тунгуска",
+      "game_coords": {
+        "left_top": [0, 251],
+        "right_bottom": [251, 0]
+      },
+      "mouse_coords": {
+        "left_top": [0, 251],
+        "right_bottom": [251, 0]
+      }
+    },
+    {
+      "name": "р. Яма",
+      "game_coords": {
+        "left_top": [-11, 311],
+        "right_bottom": [310, -12]
+      },
+      "mouse_coords": {
+        "left_top": [-11, 311],
+        "right_bottom": [310, -12]
+      }
+    },
+    {
+      "name": "оз. Янтарное",
+      "game_coords": {
+        "left_top": [-2, 213],
+        "right_bottom": [194, 18]
+      },
+      "mouse_coords": {
+        "left_top": [-2, 213],
+        "right_bottom": [194, 18]
+      }
+    },
+    {
+      "name": "оз. Медное",
+      "game_coords": {
+        "left_top": [24, 77],
+        "right_bottom": [78, 23]
+      },
+      "mouse_coords": {
+        "left_top": [24, 77],
+        "right_bottom": [78, 23]
+      }
+    },
+    {
+      "name": "Норвежское море",
+      "game_coords": {
+        "left_top": [-39, 1037],
+        "right_bottom": [1037, -41]
+      },
+      "mouse_coords": {
+        "left_top": [-39, 1037],
+        "right_bottom": [1037, -41]
+      }
+    }
+  ]

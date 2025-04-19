@@ -1,0 +1,184 @@
+/* Загальні стилі для поп-апів */
+.update-popup,
+.release-notes-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: popup-fade-in 0.3s ease-in-out;
+}
+
+@keyframes popup-fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* Стилі для поп-апу оновлення версії */
+.update-popup-content {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+    padding: 25px;
+    max-width: 450px;
+    width: 90%;
+    text-align: center;
+    position: relative;
+    border: 3px solid rgb(101, 141, 209);
+    animation: popup-slide-in 0.4s ease-out;
+}
+
+@keyframes popup-slide-in {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.update-popup-content h3 {
+    margin-bottom: 10px;
+    color: #333;
+    font-size: 22px;
+    font-weight: 600;
+}
+
+.update-popup-content p {
+    color: #232d44;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.update-popup-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+}
+
+.update-popup-btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid;
+}
+
+.update-popup-btn.primary {
+    background-color: #658dd1;
+    color: #f8fafc;
+}
+
+.update-popup-btn.primary:hover {
+    background-color: #76a2d8;
+    color: rgb(255, 255, 255);
+}
+
+.update-popup-btn.secondary {
+    background-color: #f8f8f8;
+    border-color: #ccc;
+    color: #666;
+}
+
+.update-popup-btn.secondary:hover {
+    background-color: #eee;
+}
+
+/* Стилі для поп-апу з інформацією про оновлення */
+.release-notes-content {
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(95, 159, 255, 0.3);
+    padding: 25px;
+    max-width: 500px;
+    width: 90%;
+    position: relative;
+    border: 3px solid #658dd1;
+    animation: popup-slide-in 0.4s ease-out;
+}
+
+.release-notes-content h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 22px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.version-tag {
+    background-color: #658dd1;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8em;
+    display: inline-block;
+}
+
+.release-notes-body {
+    margin: 15px 0 25px;
+    color: #444;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.release-notes-list {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.release-notes-list li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.release-notes-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    gap: 10px;
+}
+
+.release-notes-btn {
+    padding: 10px 20px;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 2px solid;
+}
+
+.release-notes-btn.ok-btn {
+    background-color: #ffffff;
+    border-color: #658dd1;
+    color: #202739;
+    margin-left: auto;
+}
+
+.release-notes-btn.ok-btn:hover {
+    background-color: #dbe8ff;
+    color: rgb(29, 41, 59);
+}
+
+.release-notes-btn.more-btn {
+    background-color: #658dd1;
+    color: #fafafa;
+}
+
+.release-notes-btn.more-btn:hover {
+    background-color: #789ee0;
+}

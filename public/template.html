@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/x-icon" href="images/Logo rf4 Posts.jpg">
+  <title>Точки ловли</title>
+  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/template.css">
+  <link rel="stylesheet" href="styles/posts.css">
+  <link rel="stylesheet" href="styles/coordsInput-mapDrag.css">
+  <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+  <script type="module" src="js/version-management/versionChecker.js"></script>
+  
+  <div class="header">
+    <h1><a href="/home" alt="Назад на головну">Точки ловли</a></h1>
+    <div class="version-container">
+      <span class="version"></span>
+    </div>
+    <!-- <div class="menu-container">
+      <a href="/home" alt="Назад на главную">Главная</a>
+    </div> -->
+    <div id="telegram-channel-link">
+      <a href="https://t.me/rf4postts">
+          <img src="images/telegram_logo.svg">
+          <span>Телеграм канал</span>
+      </a>
+    </div>
+  </div>
+  <div class="main-container">
+    <div class="top-bar-container">
+        <div id="title">map name</div>
+      </div>
+    <div id="template-info-container">
+        <div class="left-section">
+          <div id="image-wrapper">
+            <div id="coords-input-bar">
+              <label for="coord-x"></label>
+              <input type="number" id="coord-x" style="width:60px;" placeholder="X">
+              <label for="coord-y"></label>
+              <input type="number" id="coord-y" style="width:60px;" placeholder="Y">
+              <button id="show-coord-btn" style="margin-left:8px;">Показать</button>
+            </div>
+            <div id="zoom-container">
+              <img id="image" src="" alt="Карта">
+              <div id="dots-layer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="right-section">
+            <div id="posts-bar">
+                <h2 id="posts-title">Посты</h2>
+                <a id="filter-button"></a>
+            </div>
+            <div id="posts-container"></div>
+        </div>
+    </div>
+  </div>
+  <div class="footer">
+    Copyright © 2025 | Doofeross |&nbsp;
+    <a href="https://github.com/mrtavor/rf4Posts/tree/v1">GitHub проект</a>&nbsp;|&nbsp;
+    <a href="https://vk.com/pp4wikipedia">Посты с PP4Wikipedia</a>&nbsp;|&nbsp;
+    <a href="https://t.me/URomeX">Связаться с разработчиком</a>
+  </div>
+  
+  <div id="mouse-coords-tooltip" style="display:none"></div>
+
+  <script type="module" src="js/maps/coords-input.js"></script>
+  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/maps/mapCoords.js"></script>
+  <script type="module" src="js/pages/template.js"></script>
+  
+  <script type="module">
+    // Інітіалізуємо функції зуму та перетягування вручну
+    import { initZoom } from './js/maps/mapZoom.js';
+    import { initDrag } from './js/maps/mapDrag.js';
+    
+    initZoom();
+    initDrag();
+
+  </script>
+</body>
+</html>
