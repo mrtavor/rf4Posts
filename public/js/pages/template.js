@@ -3,54 +3,51 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getFirestore, collection, getDocs, limit, query, where, orderBy, startAfter } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { firebaseConfig } from '../utils/firebase-config.js';
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-analytics.js";
-import { loadMapData, syncDotsLayerSize, drawCircleOnMap, addCirclePoint, redrawAllPoints, extractCoordinates, getMouseGameCoords } from '../maps/mapCoords.js';
+import { syncDotsLayerSize, drawCircleOnMap, addCirclePoint, redrawAllPoints, extractCoordinates } from '../maps/mapCoords.js';
 import { enablePostHoverHighlight } from '../utils/postHoverHandler.js';
 import { startVersionChecker } from '../version-management/versionChecker.js';
 import { setupCoordsInput } from '../maps/coords-input.js';
+import mapManager from '../maps/mapDataManager.js';
 
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const analytics = getAnalytics(app);
 
-let mapData = [];
 let allPoints = [];
 
 window.addEventListener('DOMContentLoaded', async function() {
-    // Получить параметр из URL
-    function getParameterByName(name) {
-        const url = new URL(window.location.href);
-        return url.searchParams.get(name);
-    }
-
-    // Получить title из URL
-    const title = getParameterByName('title');
-
-    // Получить элементы DOM
+    // Инициализируем менеджер данных карт
+    await mapManager.initialize();
+    
+    // Получаем ключ карты из URL
+    const mapKey = mapManager.getMapKeyFromUrl();
+    
+    // Получаем полные данные карты
+    const mapData = mapManager.getMapData(mapKey);
+    
+    // Получаем элементы DOM
     const titleElement = document.getElementById('title');
     const imageElement = document.getElementById('image');
     const postsContainer = document.getElementById('posts-container');
 
-    // Установить название и картинку
-    if (mapsData[title]) {
-        titleElement.textContent = mapsData[title].name;
-        imageElement.src = mapsData[title].image;
+    // Устанавливаем название и картинку
+    if (mapData) {
+        titleElement.textContent = mapData.title;
+        imageElement.src = mapData.image;
+        document.title = mapData.title + ' | Точки лова';
+    } else if (mapsData[mapKey]) {
+        // Запасной вариант, если mapManager не нашел данные
+        titleElement.textContent = mapsData[mapKey].name;
+        imageElement.src = mapsData[mapKey].image;
+        document.title = mapsData[mapKey].name + ' | Точки лова';
     } else {
         titleElement.textContent = 'Название не найдено';
         imageElement.src = 'images/default-image.webp';
-    }
-
-    // Припустимо, mapsData[title].name — це назва карти
-    if (mapsData[title] && mapsData[title].name) {
-        document.title = mapsData[title].name + ' | Точки лова';
-    } else {
         document.title = 'Точки лова';
     }
 
-    // Загружаем данные карты
-    mapData = await loadMapData();
-
-    // Синхронизируем слой точек с размером картинки
+    // Синхронизируем размер слоя точек с размером изображения
     syncDotsLayerSize('image');
 
     let lastDoc = null;
@@ -60,8 +57,11 @@ window.addEventListener('DOMContentLoaded', async function() {
     async function loadPostsChunk() {
         if (loading || allPostsLoaded) return;
         loading = true;
-        const mapKey = mapsData[title]?.map || title;
-        const { posts, lastDoc: newLastDoc } = await fetchPostsFromFirestore(mapKey, lastDoc, 20);
+        
+        // Получаем ключ карты для запроса к Firestore
+        const firestoreMapKey = mapData ? mapData.mapKey : (mapsData[mapKey]?.map || mapKey);
+        
+        const { posts, lastDoc: newLastDoc } = await fetchPostsFromFirestore(firestoreMapKey, lastDoc, 20);
 
         // Если ничего не пришло — больше постов нет
         if (posts.length === 0) {
@@ -100,8 +100,8 @@ window.addEventListener('DOMContentLoaded', async function() {
             const coords = extractCoordinates(post.coordinates);
             if (coords) {
                 addCirclePoint(allPoints, coords);
-                const mapName = mapsData[title]?.name;
-                drawCircleOnMap('image', coords, mapData, mapName);
+                const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
+                drawCircleOnMap('image', coords, mapManager.mapJsonData, mapName);
             }
 
             // Добавляем обработчики для "читать далее" и "скрыть"
@@ -145,32 +145,33 @@ window.addEventListener('DOMContentLoaded', async function() {
         enablePostHoverHighlight(postsContainer);
     }
 
-    // Показать первые 20 постов
+    // Показываем первые 20 постов
     await loadPostsChunk();
 
-    // Подгружать еще при скролле (infinite scroll)
+    // Подгружаем еще при скролле (infinite scroll)
     window.addEventListener('scroll', async () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
             await loadPostsChunk();
         }
     });
 
-    const mapName = mapsData[title]?.name;
+    const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
 
     imageElement.onload = () => {
         syncDotsLayerSize('image');
-        redrawAllPoints('image', mapData, allPoints, mapName);
+        redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
     };
 
     window.addEventListener('resize', () => {
         syncDotsLayerSize('image');
-        redrawAllPoints('image', mapData, allPoints, mapName);
+        redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
     });
 
     const tooltip = document.getElementById('mouse-coords-tooltip');
 
     imageElement.addEventListener('mousemove', (event) => {
-        const coords = getMouseGameCoords(event, 'image', mapData, mapName);
+        // Используем метод pixelsToGameCoords из менеджера карт
+        const coords = mapManager.pixelsToGameCoords(event);
         if (coords) {
             // Округляем до целых
             const x = Math.round(coords.x);
@@ -191,11 +192,11 @@ window.addEventListener('DOMContentLoaded', async function() {
         checkInterval: 5 * 60 * 1000 // 5 минут
     });
 
-    // Передаємо всі необхідні дані у setupCoordsInput
+    // Передаем все необходимые данные в setupCoordsInput
     setupCoordsInput({ 
         mapsData, 
-        mapData, 
-        title 
+        mapData: mapManager.mapJsonData, 
+        title: mapKey 
     });
 });
 
@@ -215,7 +216,7 @@ async function fetchPostsFromFirestore(map, lastDoc = null, batchSize = 20) {
     return { posts, lastDoc: snapshot.docs[snapshot.docs.length - 1] };
 }
 
-// Функція для повернення на головну сторінку
+// Функция для возврата на главную страницу
 function goHome() {
     window.location.href = '/home';
 }

@@ -25,7 +25,7 @@
     </div> -->
     <div id="telegram-channel-link">
       <a href="https://t.me/rf4postts">
-          <img src="images/telegram_logo.svg">
+          <img src="images/svg/telegram_logo.svg">
           <span>Телеграм канал</span>
       </a>
     </div>
@@ -37,14 +37,33 @@
     <div id="template-info-container">
         <div class="left-section">
           <div id="image-wrapper">
-            <div id="coords-input-bar">
+            <div class="on-map" id="coords-input-bar">
               <label for="coord-x"></label>
               <input type="number" id="coord-x" style="width:60px;" placeholder="X">
               <label for="coord-y"></label>
               <input type="number" id="coord-y" style="width:60px;" placeholder="Y">
               <button id="show-coord-btn" style="margin-left:8px;">Показать</button>
             </div>
-            <div id="ruler-switch-container" style="margin: 10px 0 0 0;">
+            <div class="on-map-feachers" id="ruler-feachers">
+              <div id="feachers-container">
+                <div class="ruler-feacher-last" id="area-ruler-feacher">
+                  <img src="images/svg/area-ruler-inactive.svg" alt="area-ruler" id="area-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="multi-point-ruler-feacher">
+                  <img src="images/svg/multi-point-ruler-inactive.svg" alt="multi-point-ruler" id="radial-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="radial-ruler-feacher">
+                  <img src="images/svg/radial-ruler-inactive.svg" alt="radial-ruler" id="radial-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="multi-ruler-feacher">
+                  <img src="images/svg/multi-ruler-inactive.svg" alt="multi-ruler" id="multi-ruler-icon">
+                </div>
+              </div>
+              <div class="ruler-feacher-arrow" id="arrow-left">
+                <img src="images/svg/keyboard-arrow-right.svg" alt="arrow-left" id="arrow-left-icon">
+              </div>
+            </div>
+            <div class="on-map" id="ruler-switch-container" style="margin: 10px 0 0 0;">
               <label class="switch">
                 <input type="checkbox" id="ruler-switch-checkbox">
                 <span class="slider"></span>

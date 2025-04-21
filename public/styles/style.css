@@ -146,3 +146,25 @@ a {
 .update-banner-btn:hover {
     background: #528dd4;
 }
+
+.on-map {
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 1002;
+    padding: 15px;
+    background-color: #eccda9;
+    border: 3px solid #9d816a;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #61504388;
+}
+
+.on-map-feachers {
+    position: absolute;
+    background-color: #ffffff;
+    z-index: 1002;
+    padding: 9px;
+    background-color: #eccda9;
+    border: 3px solid #9d816a;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px #61504388
+}
