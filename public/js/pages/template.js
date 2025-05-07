@@ -57,12 +57,23 @@ window.addEventListener('DOMContentLoaded', async function() {
         titleElement.textContent = mapsData[mapKey].name;
         imageElement.src = mapsData[mapKey].image;
         document.title = mapsData[mapKey].name + ' | Точки лова';
+    // Устанавливаем название и картинку
+    if (mapData) {
+        titleElement.textContent = mapData.title;
+        imageElement.src = mapData.image;
+        document.title = mapData.title + ' | Точки лова';
+    } else if (mapsData[mapKey]) {
+        // Запасной вариант, если mapManager не нашел данные
+        titleElement.textContent = mapsData[mapKey].name;
+        imageElement.src = mapsData[mapKey].image;
+        document.title = mapsData[mapKey].name + ' | Точки лова';
     } else {
         titleElement.textContent = 'Название не найдено';
         imageElement.src = 'images/default-image.webp';
         document.title = 'Точки лова';
     }
 
+    // Синхронизируем размер слоя точек с размером изображения
     // Синхронизируем размер слоя точек с размером изображения
     syncDotsLayerSize('image');
 
@@ -71,6 +82,11 @@ window.addEventListener('DOMContentLoaded', async function() {
     async function loadPostsChunk() {
         if (loading || allPostsLoaded) return;
         loading = true;
+        
+        // Получаем ключ карты для запроса к Firestore
+        const firestoreMapKey = mapData ? mapData.mapKey : (mapsData[mapKey]?.map || mapKey);
+        
+        const { posts, lastDoc: newLastDoc } = await fetchPostsFromFirestore(firestoreMapKey, lastDoc, 20);
         
         // Получаем ключ карты для запроса к Firestore
         const firestoreMapKey = mapData ? mapData.mapKey : (mapsData[mapKey]?.map || mapKey);
@@ -117,6 +133,8 @@ window.addEventListener('DOMContentLoaded', async function() {
                 addCirclePoint(allPoints, coords);
                 const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
                 drawCircleOnMap('image', coords, mapManager.mapJsonData, mapName);
+                const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
+                drawCircleOnMap('image', coords, mapManager.mapJsonData, mapName);
             }
 
             // Добавляем обработчики для "читать далее" и "скрыть"
@@ -161,8 +179,10 @@ window.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Показываем первые 20 постов
+    // Показываем первые 20 постов
     await loadPostsChunk();
 
+    // Подгружаем еще при скролле (infinite scroll)
     // Подгружаем еще при скролле (infinite scroll)
     window.addEventListener('scroll', async () => {
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
@@ -171,20 +191,25 @@ window.addEventListener('DOMContentLoaded', async function() {
     });
 
     const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
+    const mapName = mapData ? mapData.title : mapsData[mapKey]?.name;
 
     imageElement.onload = () => {
         syncDotsLayerSize('image');
+        redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
         redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
     };
 
     window.addEventListener('resize', () => {
         syncDotsLayerSize('image');
         redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
+        redrawAllPoints('image', mapManager.mapJsonData, allPoints, mapName);
     });
 
     const tooltip = document.getElementById('mouse-coords-tooltip');
 
     imageElement.addEventListener('mousemove', (event) => {
+        // Используем метод pixelsToGameCoords из менеджера карт
+        const coords = mapManager.pixelsToGameCoords(event);
         // Используем метод pixelsToGameCoords из менеджера карт
         const coords = mapManager.pixelsToGameCoords(event);
         if (coords) {
@@ -208,8 +233,11 @@ window.addEventListener('DOMContentLoaded', async function() {
     });
 
     // Передаем все необходимые данные в setupCoordsInput
+    // Передаем все необходимые данные в setupCoordsInput
     setupCoordsInput({ 
         mapsData, 
+        mapData: mapManager.mapJsonData, 
+        title: mapKey 
         mapData: mapManager.mapJsonData, 
         title: mapKey 
     });
@@ -244,6 +272,7 @@ async function fetchPostsFromFirestore(map, lastDoc = null, batchSize = 20) {
     }
 }
 
+// Функция для возврата на главную страницу
 // Функция для возврата на главную страницу
 function goHome() {
     window.location.href = '/home';

@@ -18,8 +18,10 @@ export function setupCoordsInput(params) {
   const showCoordBtn = document.getElementById('show-coord-btn');
   
   // Получаем параметры
+  // Получаем параметры
   const { mapData, title, mapsData: passedMapsData } = params || {};
   
+  // Используем переданные данные или импортированные из модуля
   // Используем переданные данные или импортированные из модуля
   const mapsDataObj = passedMapsData || mapsData;
   
@@ -157,6 +159,9 @@ export function setupCoordsInput(params) {
           
           // Очищаем поля ввода и скрываем кнопку после успешного создания точки
           showCoordBtn.style.display = 'none';
+          
+          // Очищаем поля ввода и скрываем кнопку после успешного создания точки
+          showCoordBtn.style.display = 'none';
         } else {
           throw new Error('Не удалось создать точку');
         }
@@ -235,6 +240,7 @@ function showCoordsError(message) {
     document.body.appendChild(popup);
   }
   // Скрываем popup успеха, если он есть
+  // Скрываем popup успеха, если он есть
   const successPopup = document.getElementById('coords-success-popup');
   if (successPopup) successPopup.style.display = 'none';
 
@@ -258,6 +264,7 @@ function showCoordsSuccess(message) {
     popup.className = 'coords-success-popup';
     document.body.appendChild(popup);
   }
+  // Скрываем popup ошибки, если он есть
   // Скрываем popup ошибки, если он есть
   const errorPopup = document.getElementById('coords-error-popup');
   if (errorPopup) errorPopup.style.display = 'none';
