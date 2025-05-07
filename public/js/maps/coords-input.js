@@ -17,54 +17,23 @@ export function setupCoordsInput(params) {
   const coordYInput = document.getElementById('coord-y');
   const showCoordBtn = document.getElementById('show-coord-btn');
   
-  // Получаем параметры
+  // Отримуємо параметри
   const { mapData, title, mapsData: passedMapsData } = params || {};
   
-  // Используем переданные данные или импортированные из модуля
+  // Використовуємо передані дані або імпортовані з модуля
   const mapsDataObj = passedMapsData || mapsData;
   
   if (!coordXInput || !coordYInput || !showCoordBtn) {
+    console.error('Не найдены необходимые элементы ввода координат');
     return;
   }
-  
-  // Изначально скрываем кнопку "Показать"
-  showCoordBtn.style.display = 'none';
-  
-  // Функция для удаления точки
-  function removeCustomDot() {
-    const oldDot = document.getElementById('custom-blue-dot');
-    if (oldDot) {
-      // Добавляем класс для анимации исчезновения
-      oldDot.classList.add('removing');
-      
-      // Удаляем точку после завершения анимации
-      oldDot.addEventListener('animationend', () => {
-        oldDot.remove();
-      }, { once: true });
-    }
-  }
-  
-  // Функция для проверки нужно ли показывать кнопку
-  function checkShowButton() {
-    // Показываем кнопку если хотя бы одно поле заполнено
-    if (coordXInput.value.trim() !== '' || coordYInput.value.trim() !== '') {
-      showCoordBtn.style.display = 'inline-block';
-    } else {
-      showCoordBtn.style.display = 'none';
-    }
-    // Удаляем точку при любом изменении координат
-    removeCustomDot();
-  }
-  
-  // Добавляем обработчики событий для полей ввода
-  coordXInput.addEventListener('input', checkShowButton);
-  coordYInput.addEventListener('input', checkShowButton);
   
   // Создаем контейнер для точек, если его нет
   const dotsLayer = document.getElementById('dots-layer');
   if (!dotsLayer) {
     const imageWrapper = document.getElementById('image-wrapper');
     if (!imageWrapper) {
+      console.error('Не найден #image-wrapper');
       return;
     }
     
@@ -82,18 +51,22 @@ export function setupCoordsInput(params) {
   
   // Используем полученные данные карты или загружаем, если их нет
   if (mapData && title) {
+    console.log('Використовуємо передані дані карт для координат');
     setupCoordinatesHandler(mapData, title, mapsDataObj);
   } else {
     // Загружаем данные карт если они не переданы
+    console.log('Завантажуємо дані карт для координат, бо їх не передано');
     loadMapData()
       .then(loadedMapData => {
         // Получаем название текущей карты из URL
         const urlParams = new URLSearchParams(window.location.search);
         const loadedTitle = urlParams.get('title') || '';
         
+        console.log('Дані карт успішно завантажено для координат, карта:', loadedTitle);
         setupCoordinatesHandler(loadedMapData, loadedTitle, mapsDataObj);
       })
       .catch(error => {
+        console.error('Ошибка загрузки данных карт:', error);
         showCoordsError('Не удалось загрузить данные карт');
       });
   }
@@ -112,7 +85,8 @@ export function setupCoordsInput(params) {
       }
       
       // Удаляем старую точку
-      removeCustomDot();
+      const oldDot = document.getElementById('custom-blue-dot');
+      if (oldDot) oldDot.remove();
       
       // Проверяем, существует ли карта в данных
       if (!mapName) {
@@ -154,13 +128,11 @@ export function setupCoordsInput(params) {
         
         if (dot) {
           showCoordsSuccess(`Точка создана на координатах X${x}, Y${y}`);
-          
-          // Очищаем поля ввода и скрываем кнопку после успешного создания точки
-          showCoordBtn.style.display = 'none';
         } else {
           throw new Error('Не удалось создать точку');
         }
       } catch (error) {
+        console.error('Ошибка при создании точки:', error);
         showCoordsError('Не удалось создать точку на карте');
       }
     });
@@ -183,6 +155,7 @@ function createCustomDot(imageId, gameCoords, mapData, mapName) {
   const dotsLayer = document.getElementById('dots-layer');
 
   if (!img || !dotsLayer || !mapData) {
+    console.error('Отсутствуют необходимые элементы');
     return null;
   }
 
@@ -234,7 +207,7 @@ function showCoordsError(message) {
     popup.className = 'coords-error-popup';
     document.body.appendChild(popup);
   }
-  // Скрываем popup успеха, если он есть
+  // Сховаємо popup успіху, якщо він є
   const successPopup = document.getElementById('coords-success-popup');
   if (successPopup) successPopup.style.display = 'none';
 
@@ -258,7 +231,7 @@ function showCoordsSuccess(message) {
     popup.className = 'coords-success-popup';
     document.body.appendChild(popup);
   }
-  // Скрываем popup ошибки, если он есть
+  // Сховаємо popup помилки, якщо він є
   const errorPopup = document.getElementById('coords-error-popup');
   if (errorPopup) errorPopup.style.display = 'none';
 

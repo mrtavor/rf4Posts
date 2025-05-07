@@ -4,3 +4,4 @@ node_modules
 vk_parser.js
 serviceAccountKey.json
 .gitignore
+firebase-debug.log
