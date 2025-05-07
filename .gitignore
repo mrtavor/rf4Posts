@@ -3,3 +3,5 @@ node_modules
 .env
 vk_parser.js
 serviceAccountKey.json
+.gitignore
+firebase-debug.log

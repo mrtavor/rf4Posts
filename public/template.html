@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles/posts.css">
   <link rel="stylesheet" href="styles/coordsInput-mapDrag.css">
   <link rel="stylesheet" href="styles/popup.css">
+  <link rel="stylesheet" href="styles/ruler.css">
 </head>
 <body>
   <script type="module" src="js/version-management/versionChecker.js"></script>
@@ -24,7 +25,7 @@
     </div> -->
     <div id="telegram-channel-link">
       <a href="https://t.me/rf4postts">
-          <img src="images/telegram_logo.svg">
+          <img src="images/svg/telegram_logo.svg">
           <span>Телеграм канал</span>
       </a>
     </div>
@@ -36,12 +37,38 @@
     <div id="template-info-container">
         <div class="left-section">
           <div id="image-wrapper">
-            <div id="coords-input-bar">
+            <div class="on-map" id="coords-input-bar">
               <label for="coord-x"></label>
               <input type="number" id="coord-x" style="width:60px;" placeholder="X">
               <label for="coord-y"></label>
               <input type="number" id="coord-y" style="width:60px;" placeholder="Y">
               <button id="show-coord-btn" style="margin-left:8px;">Показать</button>
+            </div>
+            <div class="on-map-feachers" id="ruler-feachers">
+              <div id="feachers-container">
+                <div class="ruler-feacher-last" id="area-ruler-feacher">
+                  <img src="images/svg/area-ruler-inactive.svg" alt="area-ruler" id="area-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="multi-point-ruler-feacher">
+                  <img src="images/svg/multi-point-ruler-inactive.svg" alt="multi-point-ruler" id="radial-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="radial-ruler-feacher">
+                  <img src="images/svg/radial-ruler-inactive.svg" alt="radial-ruler" id="radial-ruler-icon">
+                </div>
+                <div class="ruler-feacher" id="multi-ruler-feacher">
+                  <img src="images/svg/multi-ruler-inactive.svg" alt="multi-ruler" id="multi-ruler-icon">
+                </div>
+              </div>
+              <div class="ruler-feacher-arrow" id="arrow-left">
+                <img src="images/svg/keyboard-arrow-right.svg" alt="arrow-left" id="arrow-left-icon">
+              </div>
+            </div>
+            <div class="on-map" id="ruler-switch-container" style="margin: 10px 0 0 0;">
+              <label class="switch">
+                <input type="checkbox" id="ruler-switch-checkbox">
+                <span class="slider"></span>
+              </label>
+              <span style="margin-left: 10px;">Рулетка</span>
             </div>
             <div id="zoom-container">
               <img id="image" src="" alt="Карта">
@@ -50,11 +77,34 @@
           </div>
         </div>
         <div class="right-section">
+            <div class="tabs">
+                <button class="tab-button active" data-tab="posts">Посты</button>
+                <!-- <button class="tab-button" data-tab="baits">Приманки</button> -->
+            </div>
             <div id="posts-bar">
-                <h2 id="posts-title">Посты</h2>
-                <a id="filter-button"></a>
+                <div class="filter-container">
+                    <button id="add-filter-btn">+ Добавить фильтр</button>
+                    <div id="filter-dropdown" class="hidden">
+                        <div class="filter-section">
+                            <h3>Виды рыб</h3>
+                            <select id="fish-filter">
+                                <option value="all">Все виды рыб</option>
+                            </select>
+                        </div>
+                        <div class="filter-section">
+                            <h3>Время</h3>
+                            <select id="time-filter">
+                                <option value="3">За последние 3 дня</option>
+                                <option value="7">За последние 7 дней</option>
+                                <option value="14" selected>За последние 14 дней</option>
+                                <!-- <option value="30">За последние 30 дней</option> -->
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div id="posts-container"></div>
+            <div id="baits-container" class="hidden"></div>
         </div>
     </div>
   </div>
@@ -70,7 +120,10 @@
   <script type="module" src="js/maps/coords-input.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/maps/mapCoords.js"></script>
+  <script type="module" src="js/maps/ruler.js"></script>
   <script type="module" src="js/pages/template.js"></script>
+  <script type="module" src="js/components/filter/postsFilter.js"></script>
+  <script type="module" src="js/components/filter/forFishNames.js"></script>
   
   <script type="module">
     // Інітіалізуємо функції зуму та перетягування вручну
@@ -79,7 +132,6 @@
     
     initZoom();
     initDrag();
-
   </script>
 </body>
 </html>

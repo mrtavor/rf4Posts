@@ -29,7 +29,7 @@
     text-align: center;
     padding: 15px;
     max-width: 400px;
-    min-width: 200px;
+    min-width: 180px;
 }
 
 .grid-item:hover::before {
@@ -102,4 +102,25 @@
 }
 .welcome-popup-ok:hover {
     background: #3566a3;
+}
+
+@media screen and (max-width: 1160px) {
+    #index-info-container{
+        flex-direction: column;
+    }
+
+    .grid-container{
+        min-height: 80%;
+        min-width: 569px;
+    }
+    
+    #adds {
+        order: -1; /* Переміщує правий розділ перед лівим */
+        margin-bottom: 20px;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        min-width: 569px;
+    }
+
 }

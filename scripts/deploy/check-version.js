@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const readline = require('readline');
 const path = require('path');
@@ -128,6 +129,20 @@ function hasValidReleaseNotes(releaseData) {
 async function checkVersion() {
   console.log('✓ Начинаю проверку версии перед деплоем...');
   
+  // Пропускаємо перевірку версії в CI середовищі
+  if (process.env.CI === 'true') {
+    console.log("✓ CI environment detected. Skipping version check.");
+    runDeploy();
+    return;
+  }
+  
+  // Або пропускаємо, якщо встановлена змінна SKIP_VERSION_CHECK
+  if (process.env.SKIP_VERSION_CHECK) {
+    console.log("✓ Version check skipped.");
+    runDeploy();
+    return;
+  }
+  
   // Проверяем время последнего деплоя
   if (checkLastDeployTime()) {
     rl.close();
@@ -148,8 +163,8 @@ async function checkVersion() {
     console.log(`ℹ️ Заметки о релизе: ${hasReleaseNotes ? 'имеются' : 'отсутствуют'}`);
   }
   
-  // Сначала спрашиваем о версии независимо от наличия заметок
-  const currentVersion = releaseData.version;
+  // Берём текущую версию только из файла version.json
+  const currentVersion = versionData.version;
   console.log(`✓ Текущая версия: ${currentVersion}`);
   
   // Предлагаем следующую версию по умолчанию

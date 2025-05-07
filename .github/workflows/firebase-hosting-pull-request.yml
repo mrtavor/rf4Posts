@@ -14,8 +14,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: n
+      - name: Set CI environment variable
+        run: echo "CI=true" >> $GITHUB_ENV
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_RF4POSTS }}
           projectId: rf4posts
+        env:
+          CI: true

@@ -1,5 +1,5 @@
-let zoom = 1; // Початковий зум при загрузці сторінки
-const minZoom = 1; // scale = 1 — це мінімальний масштаб
+let zoom = 1; // Начальный зум при загрузке страницы
+const minZoom = 1; // scale = 1 — это минимальный масштаб
 const maxZoom = 3;
 
 let translate = { x: 0, y: 0 };
@@ -20,88 +20,97 @@ export function setLastTranslate(tr) {
 export function applyTransform() {
     const container = document.getElementById('zoom-container');
     if (!container) {
-      console.error('Елемент zoom-container не знайдено');
       return;
     }
     
     if (zoom === 1) {
-      // При зумі 1 не застосовуємо scale взагалі
+      // При зуме 1 не применяем scale вообще
       container.style.transform = `translate(${translate.x}px, ${translate.y}px)`;
     } else {
       container.style.transform = `translate(${translate.x}px, ${translate.y}px) scale(${zoom})`;
     }
+    
+    // Отправляем событие о применении трансформации, чтобы другие модули могли реагировать
+    const event = new CustomEvent('zoomTransformApplied', { 
+      detail: { zoom, translate: {...translate} }
+    });
+    container.dispatchEvent(event);
+    
+    // Также отправляем глобальное событие для документа
+    document.dispatchEvent(new CustomEvent('zoomChange', {
+      detail: { zoom, translate: {...translate} }
+    }));
   }
 
-  // Модифікована функція для забезпечення центрування при завантаженні
+  // Модифицированная функция для обеспечения центрирования при загрузке
   export function initZoom(wrapperId = 'image-wrapper', containerId = 'zoom-container') {
     const wrapper = document.getElementById(wrapperId);
     const container = document.getElementById(containerId);
     const img = document.getElementById('image');
     
     if (!wrapper || !container || !img) {
-      console.error('Не вдалося знайти необхідні елементи для ініціалізації зуму');
       return;
     }
     
-    // Функція для центрування за допомогою трансформації, без позиціонування
+    // Функция для центрирования с помощью трансформации, без позиционирования
     function centerWithTransform() {
-      // Скидаємо трансформацію, щоб отримати правильні розміри
+      // Сбрасываем трансформацию, чтобы получить правильные размеры
       container.style.transform = '';
       
-      // Отримуємо розміри елементів
+      // Получаем размеры элементов
       const wrapperRect = wrapper.getBoundingClientRect();
       const imgRect = img.getBoundingClientRect();
       
-      // Розраховуємо нову позицію для центрування
+      // Рассчитываем новую позицию для центрирования
       translate.x = (wrapperRect.width - imgRect.width) / 2;
       translate.y = (wrapperRect.height - imgRect.height) / 2;
       
-      // Скидаємо масштаб
+      // Сбрасываем масштаб
       zoom = 1;
       
-      // Застосовуємо трансформацію
+      // Применяем трансформацию
       applyTransform();
     }
     
-    // Застосовуємо центрування після завантаження
+    // Применяем центрирование после загрузки
     if (img.complete) {
       centerWithTransform();
     } else {
       img.onload = centerWithTransform;
     }
     
-    // Додаємо прослуховувач для зміни розміру вікна
+    // Добавляем слушатель для изменения размера окна
     window.addEventListener('resize', centerWithTransform);
     
-    // Обробник для колеса миші (зум)
+    // Обработчик для колеса мыши (зум)
     wrapper.addEventListener('wheel', (e) => {
       e.preventDefault();
       
-      // Отримуємо поточні позиції
+      // Получаем текущие позиции
       const containerRect = container.getBoundingClientRect();
       const wrapperRect = wrapper.getBoundingClientRect();
       
-      // Визначаємо позицію миші відносно контейнера
+      // Определяем позицию мыши относительно контейнера
       const mouseX = e.clientX - containerRect.left;
       const mouseY = e.clientY - containerRect.top;
       
-      // Зберігаємо поточний масштаб
+      // Сохраняем текущий масштаб
       const prevZoom = zoom;
       
-      // Змінюємо масштаб
+      // Изменяем масштаб
       const zoomFactor = 1.1;
       zoom *= e.deltaY < 0 ? zoomFactor : 1 / zoomFactor;
       zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
       
-      // Якщо ми на мінімальному зумі, просто центруємо
+      // Если мы на минимальном зуме, просто центрируем
       if (zoom === minZoom) {
         centerWithTransform();
       } else {
-        // Перераховуємо трансформацію
+        // Пересчитываем трансформацию
         translate.x = translate.x - mouseX * (zoom / prevZoom - 1);
         translate.y = translate.y - mouseY * (zoom / prevZoom - 1);
         
-        // Перевіряємо і обмежуємо нові координати, щоб вони не виходили за межі батьківського блоку
+        // Проверяем и ограничиваем новые координаты, чтобы они не выходили за пределы родительского блока
         const constrainedTranslate = clampTranslateZoom(translate, zoom, container, wrapper);
         translate = constrainedTranslate;
         
@@ -110,42 +119,42 @@ export function applyTransform() {
     }, { passive: false });
   }
 
-  // Нова функція для обмеження координат при зумі
+  // Новая функция для ограничения координат при зуме
   function clampTranslateZoom(translate, zoom, container, wrapper) {
     if (!container || !wrapper) {
       return translate;
     }
     
-    // Зберігаємо оригінальну трансформацію
+    // Сохраняем оригинальную трансформацию
     const originalTransform = container.style.transform;
     
-    // Тимчасово застосовуємо тільки масштаб
+    // Временно применяем только масштаб
     container.style.transform = `scale(${zoom})`;
     const containerRect = container.getBoundingClientRect();
     const wrapperRect = wrapper.getBoundingClientRect();
     
-    // Відновлюємо оригінальну трансформацію
+    // Восстанавливаем оригинальную трансформацию
     container.style.transform = originalTransform;
     
     let clampedTranslate = { ...translate };
     
-    // Горизонтальні обмеження
+    // Горизонтальные ограничения
     if (containerRect.width <= wrapperRect.width) {
-      // Якщо контейнер вужчий за wrapper - центруємо
+      // Если контейнер уже wrapper - центрируем
       clampedTranslate.x = (wrapperRect.width - containerRect.width) / 2;
     } else {
-      // Якщо контейнер ширший - обмежуємо границями
+      // Если контейнер шире - ограничиваем границами
       const minX = wrapperRect.width - containerRect.width;
       const maxX = 0;
       clampedTranslate.x = Math.min(maxX, Math.max(minX, clampedTranslate.x));
     }
     
-    // Вертикальні обмеження
+    // Вертикальные ограничения
     if (containerRect.height <= wrapperRect.height) {
-      // Якщо контейнер нижчий за wrapper - центруємо
+      // Если контейнер ниже wrapper - центрируем
       clampedTranslate.y = (wrapperRect.height - containerRect.height) / 2;
     } else {
-      // Якщо контейнер вищий - обмежуємо границями
+      // Если контейнер выше - ограничиваем границами
       const minY = wrapperRect.height - containerRect.height;
       const maxY = 0;
       clampedTranslate.y = Math.min(maxY, Math.max(minY, clampedTranslate.y));
@@ -163,22 +172,21 @@ export function centerZoomContainer() {
     const container = document.getElementById('zoom-container');
     
     if (!wrapper || !container) {
-      console.error('Не вдалося знайти необхідні елементи для центрування');
       return;
     }
     
-    // Зберігаємо оригінальну трансформацію
+    // Сохраняем оригинальную трансформацию
     const originalTransform = container.style.transform;
     
-    // Застосовуємо тільки масштаб, щоб отримати правильні розміри
+    // Применяем только масштаб, чтобы получить правильные размеры
     container.style.transform = `scale(${zoom})`;
     const containerRect = container.getBoundingClientRect();
     const wrapperRect = wrapper.getBoundingClientRect();
     
-    // Відновлюємо трансформацію
+    // Восстанавливаем трансформацию
     container.style.transform = originalTransform;
     
-    // Розраховуємо центрування
+    // Рассчитываем центрирование
     translate.x = (wrapperRect.width - containerRect.width) / 2;
     translate.y = (wrapperRect.height - containerRect.height) / 2;
     
@@ -191,45 +199,44 @@ export function centerZoomContainer() {
     const img = document.getElementById('image');
     
     if (!wrapper || !container || !img) {
-      console.error('Не вдалося знайти необхідні елементи для центрування');
       return;
     }
     
-    // Повністю скидаємо трансформацію для правильного обчислення
+    // Полностью сбрасываем трансформацию для правильного вычисления
     container.style.transform = '';
     translate = { x: 0, y: 0 };
     zoom = 1;
     
-    // Виконуємо центрування з невеликою затримкою
+    // Выполняем центрирование с небольшой задержкой
     setTimeout(() => {
       const wrapperRect = wrapper.getBoundingClientRect();
       const imgRect = img.getBoundingClientRect();
       
-      // Обчислюємо translate для центрування
+      // Вычисляем translate для центрирования
       translate.x = (wrapperRect.width - imgRect.width) / 2;
       translate.y = (wrapperRect.height - imgRect.height) / 2;
       
-      // Застосовуємо трансформацію
+      // Применяем трансформацию
       applyTransform();
     }, 50);
   }
 
-    // Ініціалізація при завантаженні сторінки
+    // Инициализация при загрузке страницы
     document.addEventListener('DOMContentLoaded', () => {
-    // Додаємо затримку перед ініціалізацією
+    // Добавляем задержку перед инициализацией
     setTimeout(() => {
       initZoom();
     }, 200);
     
-    // Додаткове центрування після повного завантаження сторінки
+    // Дополнительное центрирование после полной загрузки страницы
     window.addEventListener('load', () => {
       setTimeout(() => {
         const container = document.getElementById('zoom-container');
         
-        // Спочатку видаляємо всі трансформації
+        // Сначала удаляем все трансформации
         container.style.transform = '';
         
-        // Потім ініціалізуємо знову
+        // Затем инициализируем снова
         initZoom();
       }, 500);
     });
