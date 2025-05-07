@@ -10,3 +10,10 @@ export const firebaseConfig = {
   appId: "1:116855693003:web:89fc9080b017137643c54e",
   measurementId: "G-FK4GVXBY10"
 };
+
+// Додаткові налаштування для Firestore
+export const firestoreSettings = {
+  experimentalForceLongPolling: true,
+  cacheSizeBytes: 104857600, // 100 MB
+  ignoreUndefinedProperties: true
+};

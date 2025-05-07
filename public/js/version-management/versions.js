@@ -2,7 +2,6 @@ fetch('../data/data-versions.json?cacheBust=' + Date.now())
     .then(r => r.json())
     .then(versions => {
         const list = document.getElementById('versions-list');
-        console.log('Отримано версії:', versions);
         list.innerHTML = versions
             .slice().reverse()
             .map(v => `
@@ -16,6 +15,6 @@ fetch('../data/data-versions.json?cacheBust=' + Date.now())
             `).join('');
     })
     .catch(error => {
-        console.error('Помилка при завантаженні даних версій:', error);
-        document.getElementById('versions-list').innerHTML = '<div class="error-message">Помилка при завантаженні даних версій</div>';
+        console.error('Ошибка при загрузке данных версий:', error);
+        document.getElementById('versions-list').innerHTML = '<div class="error-message">Ошибка при загрузке данных версий</div>';
     });

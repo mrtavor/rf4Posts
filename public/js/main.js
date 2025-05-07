@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Відображення версії
+    // Отображение версии
     displayCurrentVersion();
     
     document.querySelectorAll('.version').forEach(elem => {
@@ -10,18 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // Підтримка URL з /home і /versions
+    // Поддержка URL с /home и /versions
     handleCleanUrls();
 });
 
 /**
- * Відображає поточну версію на сторінці
+ * Отображает текущую версию на странице
  */
 function displayCurrentVersion() {
     fetch('/data/config/version.json?cacheBust=' + Date.now())
         .then(response => {
             if (!response.ok) {
-                throw new Error('Не вдалося отримати дані версії');
+                throw new Error('Не удалось получить данные версии');
             }
             return response.json();
         })
@@ -29,43 +29,39 @@ function displayCurrentVersion() {
             if (data && data.version) {
                 document.querySelectorAll('.version').forEach(elem => {
                     elem.textContent = 'v' + data.version;
-                    console.log('Версія встановлена:', data.version);
                 });
-            } else {
-                console.error('Дані версії не містять поля version');
             }
         })
         .catch(error => {
-            console.error('Помилка при отриманні версії:', error);
+            // Игнорируем ошибку
         });
 }
 
 /**
- * Обробляє URL-шляхи для чистих URL
+ * Обрабатывает URL-пути для чистых URL
  */
 function handleCleanUrls() {
-    // Якщо користувач знаходиться на домашній сторінці без /home, перенаправляємо
+    // Если пользователь находится на домашней странице без /home, перенаправляем
     if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-        // Оновлюємо URL без перезавантаження сторінки
+        // Обновляем URL без перезагрузки страницы
         const newUrl = window.location.origin + '/home';
         window.history.replaceState(null, document.title, newUrl);
     }
     
-    // Перевіряємо сторінку versions
+    // Проверяем страницу versions
     if (window.location.pathname === '/versions_page.html') {
-        // Оновлюємо URL без перезавантаження сторінки
+        // Обновляем URL без перезагрузки страницы
         const newUrl = window.location.origin + '/versions';
         window.history.replaceState(null, document.title, newUrl);
     }
 
-    // Перевіряємо, чи знаходиться користувач на шляху /home і підвантажуємо домашню сторінку
+    // Проверяем, находится ли пользователь на пути /home и подгружаем домашнюю страницу
     if (window.location.pathname.startsWith('/home')) {
-        // Зберігаємо правильний URL та завантажуємо потрібні компоненти
-        console.log('Відображення домашньої сторінки через шлях /home');
+        // Сохраняем правильный URL и загружаем нужные компоненты
     }
     
-    // Перевіряємо, чи знаходиться користувач на шляху /versions
+    // Проверяем, находится ли пользователь на пути /versions
     if (window.location.pathname.startsWith('/versions')) {
-        console.log('Відображення сторінки історії версій через шлях /versions');
+        // Отображаем страницу истории версий
     }
 }

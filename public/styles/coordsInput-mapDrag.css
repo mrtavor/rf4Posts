@@ -1,13 +1,6 @@
 #coords-input-bar {
-    position: absolute;
     bottom: 30px;
     left: 30px;
-    z-index: 30;
-    background-color: #eccda9;
-    border: 3px solid #9d816a;
-    border-radius: 10px;
-    padding: 15px;
-    box-shadow: 0 4px 15px #61504388;
 }
 
 #coords-input-bar input {
@@ -35,6 +28,17 @@
     background-color: #ffffff;
     font-size: 1rem;
     cursor: pointer;
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+}
+
+#coords-input-bar button:hover {
+    background-color: #f0e6d9;
+}
+
+#coords-input-bar button[style*="display: none"] {
+    opacity: 0;
+    transform: translateY(5px);
+    visibility: hidden;
 }
 
 #dots-layer, .dots-layer {
@@ -96,6 +100,8 @@
     transform-origin: 0 0;
     user-select: none;
     height: 100%;
+    cursor: default !important;
+    pointer-events: auto !important;
 }
 
 /* Спеціальні стилі для картинки */
@@ -103,5 +109,10 @@
     cursor: default !important;
     max-width: 100%;
     height: auto;
+    pointer-events: auto !important;
+    -webkit-user-drag: none !important;
+    user-drag: none !important;
 }
+
+
 

@@ -1,40 +1,32 @@
 // Загружает данные о картах из файла maps_data.json
 export function loadMapData() {
-    // Визначаємо всі можливі шляхи до файлу
+    // Определяем все возможные пути к файлу
     const possiblePaths = [
-        '/data/map-data/maps_data.json',            // абсолютний шлях
-        './data/map-data/maps_data.json',           // відносний шлях
-        '../data/map-data/maps_data.json',          // відносний шлях, якщо запит з підпапки
-        '../../data/map-data/maps_data.json',       // альтернативний відносний шлях
-        window.location.origin + '/data/map-data/maps_data.json' // повний URL
+        '/data/map-data/maps_data.json',            // абсолютный путь
+        './data/map-data/maps_data.json',           // относительный путь
+        '../data/map-data/maps_data.json',          // относительный путь, если запрос из подпапки
+        '../../data/map-data/maps_data.json',       // альтернативный относительный путь
+        window.location.origin + '/data/map-data/maps_data.json' // полный URL
     ];
     
-    console.log('Спроба завантаження даних карт. Доступні шляхи:', possiblePaths);
-    
-    // Функція для перевірки і завантаження JSON
+    // Функция для проверки и загрузки JSON
     const tryFetch = (path, index = 0) => {
         if (index >= possiblePaths.length) {
-            console.error('Не вдалося завантажити JSON з жодного шляху');
-            return Promise.resolve([]); // повертаємо пустий масив
+            return Promise.resolve([]); // возвращаем пустой массив
         }
         
         const currentPath = possiblePaths[index];
-        console.log(`Спроба ${index + 1}/${possiblePaths.length}: завантаження з ${currentPath}`);
         
         return fetch(currentPath)
             .then(res => {
                 if (!res.ok) {
-                    console.warn(`Шлях ${currentPath} - помилка ${res.status}`);
                     return tryFetch(null, index + 1);
                 }
-                console.log(`Успішно завантажено з ${currentPath}`);
                 return res.json().catch(err => {
-                    console.error(`Помилка парсингу JSON з ${currentPath}:`, err);
                     return tryFetch(null, index + 1);
                 });
             })
             .catch(err => {
-                console.warn(`Помилка запиту до ${currentPath}:`, err);
                 return tryFetch(null, index + 1);
             });
     };
@@ -42,10 +34,11 @@ export function loadMapData() {
     return tryFetch(possiblePaths[0])
         .then(data => {
             if (Array.isArray(data) && data.length > 0) {
-                console.log(`Успішно завантажено дані для ${data.length} карт`);
+                // Сохраняем данные в глобальной переменной
+                window.mapJsonData = data;
                 return data;
             } else {
-                console.warn('Завантажені дані порожні або не є масивом');
+                window.mapJsonData = []; // Сохраняем пустой массив в случае ошибки
                 return [];
             }
         });
@@ -76,14 +69,12 @@ export function drawCircleOnMap(imageId, gameCoords, mapData, mapName) {
     const dotsLayer = document.getElementById('dots-layer');
 
     if (!img || !mapData) {
-        console.error('Отсутствуют необходимые элементы');
         return;
     }
 
     const mapInfo = mapData.find(m => m.name === mapName);
 
     if (!mapInfo) {
-        console.error('Не найдена информация о карте');
         return;
     }
 
@@ -146,6 +137,51 @@ export function redrawAllPoints(imageId, mapData, allPoints, mapName) {
     allPoints.forEach(coords => {
       drawCircleOnMap(imageId, coords, mapData, mapName);
     });
+    
+    // Генеруємо подію для сповіщення про оновлення точок
+    const dotsUpdatedEvent = new CustomEvent('dotsUpdated', {
+        detail: { dotsCount: allPoints.length }
+    });
+    document.dispatchEvent(dotsUpdatedEvent);
+}
+
+// Перерисовує лише точки для видимих постів
+export function redrawVisiblePoints(imageId, mapData, mapName) {
+    const dotsLayer = document.getElementById('dots-layer');
+    dotsLayer.innerHTML = ''; // Очищаємо старі точки
+    
+    // Отримуємо лише видимі пости (ті, які не приховані фільтром)
+    const visiblePosts = Array.from(document.querySelectorAll('.post'))
+        .filter(post => post.style.display !== 'none');
+    
+    console.log(`Оновлення точок: знайдено ${visiblePosts.length} видимих постів`);
+    
+    // Масив для зберігання координат точок
+    const visiblePoints = [];
+    
+    // Обробляємо всі видимі пости
+    visiblePosts.forEach(post => {
+        // Отримуємо координати з поста
+        const coordsElement = post.querySelector('.post-body div:nth-child(2)');
+        
+        if (coordsElement) {
+            const coordsText = coordsElement.textContent.replace('Координаты:', '').trim();
+            const coords = extractCoordinates(coordsText);
+            
+            if (coords) {
+                visiblePoints.push(coords);
+                drawCircleOnMap(imageId, coords, mapData, mapName);
+            }
+        }
+    });
+    
+    // Генеруємо подію для сповіщення про оновлення точок
+    const dotsUpdatedEvent = new CustomEvent('dotsUpdated', {
+        detail: { dotsCount: visiblePoints.length }
+    });
+    document.dispatchEvent(dotsUpdatedEvent);
+    
+    return visiblePoints;
 }
 
 // Извлекает игровые координаты из текста (например, из описания поста)
@@ -180,14 +216,14 @@ export function getMouseGameCoords(event, imageId, mapData, mapName) {
     const mapWidth = rect.width;
     const mapHeight = rect.height;
 
-    // Зворотній розрахунок: пікселі → ігрові координати
+    // Обратный расчет: пиксели → игровые координаты
     const gameX = minX + (x / mapWidth) * (maxX - minX);
     const gameY = minY + ((mapHeight - y) / mapHeight) * (maxY - minY);
 
     return { x: gameX, y: gameY };
 }
 
-// Перетворює ігрові координати у піксельні координати на карті
+// Преобразует игровые координаты в пиксельные координаты на карте
 export function gameCoordsToImagePosition(coords, mapData, mapName) {
     const img = document.getElementById('image');
     const mapInfo = mapData.find(m => m.name === mapName);
@@ -211,4 +247,19 @@ export function gameCoordsToImagePosition(coords, mapData, mapName) {
     const y_pixel = mapHeight - ((coords.y) - minY) * scaleY;
   
     return { x: x_pixel, y: y_pixel };
+}
+
+// Находит данные карты по ключу из mapsData
+export function findMapDataByKey(mapKey, mapJsonData, mapsData) {
+  if (!mapJsonData || !mapsData || !mapKey || !mapsData[mapKey]) {
+    return null;
   }
+  
+  // Получаем полное название карты из mapsData
+  const fullMapName = mapsData[mapKey].name;
+  
+  // Ищем соответствующие данные в maps_data.json
+  const mapData = mapJsonData.find(item => item.name === fullMapName);
+  
+  return mapData;
+}
