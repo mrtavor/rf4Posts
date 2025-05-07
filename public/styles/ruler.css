@@ -54,15 +54,8 @@
   }
 
   #ruler-switch-container {
-    position: absolute;
-    bottom: 105px;
-    left: 30px;
-    z-index: 20;
-    padding: 15px;
-    background-color: #eccda9;
-    border: 3px solid #9d816a;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px #61504388;
+    bottom: 30px;
+    right: 30px;
   }
   
   .ruler-line {
@@ -111,3 +104,113 @@
   input:checked + .slider:before {
     transform: translateX(20px);
   }
+
+  #feachers-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin: 0px 5px 0px 5px;
+    opacity: 1;
+    max-width: 500px;
+    transform: translateX(0);
+    transition: opacity 0.4s ease, max-width 0.4s ease, transform 0.4s ease;
+  }
+
+  #feachers-container[style*="display: none"] {
+    opacity: 0;
+    max-width: 0;
+    transform: translateX(-20px);
+    visibility: hidden;
+    margin: 0;
+    padding: 0;
+    transition: opacity 0.4s ease, max-width 0.4s ease, transform 0.4s ease, visibility 0s linear 0.4s;
+  }
+
+  .ruler-feacher {
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: #f1e0c9;
+    border-radius: 10px;
+  }
+
+  #ruler-feachers {
+    bottom: 30px;
+    right: 195px;
+    display: flex;
+    flex-direction: row;
+    display: none;
+  }
+
+  .ruler-feacher-last {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: #f1e0c9;
+    border-radius: 10px;
+  }
+
+  .ruler-feacher-arrow {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+  }
+
+
+  /* ruler.css - додаткові стилі */
+
+/* Збільшуємо розмір кола та виправляємо центрування */
+.ruler-circle {
+  position: absolute;
+  width: 24px; /* Збільшений розмір */
+  height: 24px; /* Збільшений розмір */
+  border: 3px solid #007bff;
+  background: rgba(0,123,255,0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%); /* Коректне центрування */
+  pointer-events: none;
+  z-index: 1001;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+}
+
+/* Лінія рулетки */
+.ruler-line {
+  position: absolute;
+  height: 2px;
+  background: #007bff;
+  pointer-events: none;
+  z-index: 1000;
+  transform-origin: left center;
+  box-shadow: 0 0 4px rgba(0, 123, 255, 0.3);
+}
+
+/* Покращене відображення мітки відстані */
+.ruler-distance-label {
+  position: absolute;
+  background: white;
+  border: 1px solid #007bff;
+  padding: 4px 8px; /* Більше паддінга для кращої видимості */
+  border-radius: 6px;
+  font-weight: bold;
+  transform: translate(-50%, -50%); /* Коректне центрування */
+  pointer-events: none;
+  z-index: 1002;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+  font-size: 14px;
+  color: #007bff;
+  white-space: nowrap;
+  min-width: 50px; /* Мінімальна ширина для кращого вигляду */
+  text-align: center;
+}
+
+/* Анімація створення точки */
+@keyframes pulse {
+  0% { transform: translate(-50%, -50%) scale(0.8); opacity: 1; }
+  50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+.ruler-circle {
+  animation: pulse 0.5s ease-out;
+}

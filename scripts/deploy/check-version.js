@@ -163,8 +163,8 @@ async function checkVersion() {
     console.log(`ℹ️ Заметки о релизе: ${hasReleaseNotes ? 'имеются' : 'отсутствуют'}`);
   }
   
-  // Сначала спрашиваем о версии независимо от наличия заметок
-  const currentVersion = releaseData.version;
+  // Берём текущую версию только из файла version.json
+  const currentVersion = versionData.version;
   console.log(`✓ Текущая версия: ${currentVersion}`);
   
   // Предлагаем следующую версию по умолчанию

@@ -12,132 +12,322 @@ import {
     const img = document.getElementById('image');
     
     if (!container || !wrapper || !img) {
-      console.error('Не вдалося знайти необхідні елементи для ініціалізації драгу');
+      console.error('Не удалось найти необходимые элементы для инициализации драга');
       return;
     }
     
-    // Встановлюємо курсор для контейнера
+    // Устанавливаем курсор для контейнера
     container.style.cursor = 'default';
     
-    // Змінні для відстеження стану перетягування
+    // Переменные для отслеживания состояния перетаскивания
     let isDragging = false;
     let startX, startY;
     let startTranslate;
+    let mouseDown = false;
     
-    // Обробник для початку перетягування
-    function onPointerDown(e) {
-      // Перевіряємо, що це ліва кнопка миші
-      if (e.button !== 0) return;
-      
-      // Перевіряємо масштаб
+    // Функция для проверки, обрабатывается ли элемент линейки
+    function isRulerElement(element) {
+      return element.hasAttribute('data-ruler-element') || 
+             element.classList.contains('ruler-circle') || 
+             element.classList.contains('ruler-line') || 
+             element.classList.contains('ruler-distance-label');
+    }
+    
+    // Функция для проверки активности линейки
+    function isRulerActive() {
+      // Не блокируем перетаскивание даже если линейка активна
+      return false;
+    }
+    
+    // Функция обновления курсора в соответствии с зумом
+    function updateCursor() {
       const zoom = getCurrentZoom();
-      if (zoom <= 1) {
+      
+      // Если линейка активна, не меняем курсор
+      if (isRulerActive()) {
         return;
       }
       
-      // Запам'ятовуємо початкові координати
-      isDragging = true;
+      if (zoom > 1) {
+        if (isDragging) {
+          container.style.cursor = 'grabbing';
+        } else {
+          container.style.cursor = 'grab';
+        }
+      } else {
+        container.style.cursor = 'default';
+      }
+    }
+    
+    // Обработчик для начала перетаскивания
+    function onPointerDown(e) {
+      // Проверяем, что это левая кнопка мыши
+      if (e.button !== 0) return;
+      
+      // Если линейка активна или клик на элементе линейки, не обрабатываем его
+      if (isRulerActive() || isRulerElement(e.target)) {
+        return;
+      }
+      
+      // Проверяем масштаб
+      const zoom = getCurrentZoom();
+      if (zoom <= 1) {
+        container.style.cursor = 'default';
+        return;
+      }
+      
+      // Запоминаем начальные координаты
       startX = e.clientX;
       startY = e.clientY;
       startTranslate = getLastTranslate();
       
-      // Встановлюємо стиль курсора і захоплення
+      // Устанавливаем состояние перетаскивания
+      isDragging = true;
       container.setPointerCapture(e.pointerId);
-      container.style.cursor = 'default';
-      // Додаємо клас для CSS-стилізації
+      container.style.cursor = 'grabbing';
+      
+      // Добавляем класс для CSS-стилизации
       container.classList.add('dragging');
-      // Додаємо клас до body, щоб встановити правильний курсор
+      
+      // Добавляем класс к body, чтобы установить правильный курсор
       document.body.classList.add('map-dragging');
       document.body.style.userSelect = 'none';
-      e.preventDefault();
     }
     
-    // Обробник для перетягування
+    // Обработчик для перетаскивания
     function onPointerMove(e) {
-      if (!isDragging) return;
+      if (!isDragging) {
+        // Если не перетаскиваем, но курсор над контейнером,
+        // обновляем курсор в соответствии с зумом (только если линейка неактивна)
+        if (!isRulerActive()) {
+          const zoom = getCurrentZoom();
+          if (zoom > 1) {
+            container.style.cursor = 'grab';
+          }
+        }
+        return;
+      }
       
-      // Обчислюємо зміщення
+      // Изменение курсора на граббинг
+      container.style.cursor = 'grabbing';
+      
+      // Вычисляем смещение
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       
-      // Створюємо нове зміщення
+      // Создаем новое смещение
       const newTranslate = {
         x: startTranslate.x + dx,
         y: startTranslate.y + dy
       };
       
-      // Отримуємо поточний масштаб
+      // Получаем текущий масштаб
       const zoom = getCurrentZoom();
       
-      // Отримуємо розміри wrapper
+      // Получаем размеры wrapper
       const wrapperRect = wrapper.getBoundingClientRect();
       
-      // ВАЖЛИВО: отримуємо візуальні розміри контейнера ПІСЛЯ масштабування
-      // Для цього тимчасово скидаємо translate, щоб отримати тільки розміри з урахуванням scale
+      // ВАЖНО: получаем визуальные размеры контейнера ПОСЛЕ масштабирования
+      // Для этого временно сбрасываем translate, чтобы получить только размеры с учетом scale
       const originalTransform = container.style.transform;
       container.style.transform = `scale(${zoom})`;
       const containerRect = container.getBoundingClientRect();
       container.style.transform = originalTransform;
       
-      // Обчислюємо обмеження
+      // Вычисляем ограничения
       let limitedTranslate = { ...newTranslate };
       
-      // Горизонтальні обмеження
+      // Горизонтальные ограничения
       if (containerRect.width <= wrapperRect.width) {
-        // Контейнер вміщується в wrapper - центруємо
+        // Контейнер помещается в wrapper - центрируем
         limitedTranslate.x = (wrapperRect.width - containerRect.width) / 2;
       } else {
-        // Контейнер ширший за wrapper - обмежуємо
-        const minX = wrapperRect.width - containerRect.width; // Правий край контейнера не виходить за правий край wrapper
-        const maxX = 0; // Лівий край контейнера не виходить за лівий край wrapper
+        // Контейнер шире wrapper - ограничиваем
+        const minX = wrapperRect.width - containerRect.width; // Правый край контейнера не выходит за правый край wrapper
+        const maxX = 0; // Левый край контейнера не выходит за левый край wrapper
         
         limitedTranslate.x = Math.min(maxX, Math.max(minX, limitedTranslate.x));
       }
       
-      // Вертикальні обмеження
+      // Вертикальные ограничения
       if (containerRect.height <= wrapperRect.height) {
-        // Контейнер вміщується у wrapper - центруємо
+        // Контейнер помещается в wrapper - центрируем
         limitedTranslate.y = (wrapperRect.height - containerRect.height) / 2;
       } else {
-        // Контейнер вищий за wrapper - обмежуємо
-        const minY = wrapperRect.height - containerRect.height; // Нижній край контейнера не виходить за нижній край wrapper
-        const maxY = 0; // Верхній край контейнера не виходить за верхній край wrapper
+        // Контейнер выше wrapper - ограничиваем
+        const minY = wrapperRect.height - containerRect.height; // Нижний край контейнера не выходит за нижний край wrapper
+        const maxY = 0; // Верхний край контейнера не выходит за верхний край wrapper
         
         limitedTranslate.y = Math.min(maxY, Math.max(minY, limitedTranslate.y));
       }
       
-      // Застосовуємо нове зміщення
+      // Применяем новое смещение
       setLastTranslate(limitedTranslate);
       applyTransform();
     }
     
-    // Обробник для завершення перетягування
-    function onPointerUp(e) {
+    // Функция для сброса состояния перетаскивания
+    function resetDragState(e) {
       if (!isDragging) return;
       
       isDragging = false;
-      container.releasePointerCapture(e.pointerId);
-      container.style.cursor = 'default';
-      // Видаляємо клас dragging
+      if (e && e.pointerId) {
+        container.releasePointerCapture(e.pointerId);
+      }
+      
+      // Обновляем курсор после завершения перетаскивания
+      updateCursor();
+      
+      // Удаляем класс dragging
       container.classList.remove('dragging');
-      // Видаляємо клас з body
+      // Удаляем класс с body
       document.body.classList.remove('map-dragging');
       document.body.style.userSelect = '';
+      
+      // Вызываем событие завершения перетаскивания для линейки
+      const dragEndEvent = new CustomEvent('dragend', {
+        bubbles: true,
+        cancelable: false,
+        detail: {
+          timestamp: Date.now()
+        }
+      });
+      document.dispatchEvent(dragEndEvent);
     }
     
-    // Видаляємо попередні обробники, якщо такі є
+    // Обработчик для завершения перетаскивания
+    function onPointerUp(e) {
+      resetDragState(e);
+    }
+    
+    // Обработчик для отмены перетаскивания
+    function onPointerCancel(e) {
+      resetDragState(e);
+    }
+    
+    // Обработчик для события когда курсор входит в контейнер
+    function onPointerEnter(e) {
+      if (!isDragging && !isRulerActive()) {
+        updateCursor();
+      }
+    }
+    
+    // Обработчик для события когда курсор выходит из контейнера
+    function onPointerLeave(e) {
+      if (!isDragging) {
+        // Восстанавливаем стандартный курсор
+        container.style.cursor = 'default';
+      }
+    }
+    
+    // Обработчик изменения состояния линейки
+    function onRulerChange(e) {
+      // Обновляем курсор в соответствии с состоянием линейки
+      updateCursor();
+    }
+    
+    // Удаляем предыдущие обработчики, если такие есть
     container.removeEventListener('pointerdown', onPointerDown);
     container.removeEventListener('pointermove', onPointerMove);
     container.removeEventListener('pointerup', onPointerUp);
-    container.removeEventListener('pointercancel', onPointerUp);
+    container.removeEventListener('pointercancel', onPointerCancel);
     container.removeEventListener('pointerleave', onPointerUp);
+    container.removeEventListener('pointerenter', onPointerEnter);
     
-    // Додаємо обробники подій
+    // Добавляем обработчики событий
     container.addEventListener('pointerdown', onPointerDown);
     container.addEventListener('pointermove', onPointerMove);
     container.addEventListener('pointerup', onPointerUp);
-    container.addEventListener('pointercancel', onPointerUp);
-    container.addEventListener('pointerleave', onPointerUp);
+    container.addEventListener('pointercancel', onPointerCancel);
+    container.addEventListener('pointerleave', onPointerLeave);
+    container.addEventListener('pointerenter', onPointerEnter);
+    
+    // Обновляем CSS стиль для драга
+    const styleTag = document.getElementById('drag-cursor-styles');
+    if (styleTag) {
+      styleTag.remove(); // Удаляем предыдущие стили если они есть
+    }
+    
+    const styleElement = document.createElement('style');
+    styleElement.id = 'drag-cursor-styles';
+    styleElement.textContent = `
+      .map-dragging {
+        cursor: grabbing !important;
+      }
+      
+      .map-dragging * {
+        cursor: grabbing !important;
+      }
+      
+      #zoom-container {
+        cursor: default;
+      }
+      
+      #zoom-container.dragging {
+        cursor: grabbing !important;
+      }
+      
+      /* Отключаем все возможные курсоры запрета на элементах */
+      * {
+        cursor: inherit;
+      }
+      
+      /* Меняем курсор для всех not-allowed на default */
+      *[style*="cursor: not-allowed"] {
+        cursor: default !important;
+      }
+      
+      /* Форсируем курсор для линейки */
+      .ruler-circle, .ruler-line, .ruler-distance-label {
+        cursor: default !important;
+      }
+      
+      /* Курсор для режима линейки */
+      #zoom-container.ruler-active {
+        cursor: crosshair !important;
+      }
+      
+      /* Когда линейка активна, устанавливаем crosshair для всего контейнера */
+      #ruler-switch-checkbox:checked ~ #ruler-switch-container + #zoom-container,
+      #ruler-switch-checkbox:checked ~ #ruler-switch-container + * #zoom-container {
+        cursor: crosshair !important;
+      }
+    `;
+    document.head.appendChild(styleElement);
+    
+    // Добавляем слушатель для изменения чекбокса линейки
+    const rulerSwitch = document.getElementById('ruler-switch-checkbox');
+    if (rulerSwitch) {
+      rulerSwitch.addEventListener('change', onRulerChange);
+    }
+    
+    // Добавляем слушатель для события изменения класса линейки
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        if (mutation.attributeName === 'class' && 
+            mutation.target === container) {
+          const hasRulerClass = container.classList.contains('ruler-active');
+          if (hasRulerClass) {
+            container.style.cursor = 'crosshair';
+          } else {
+            updateCursor();
+          }
+        }
+      });
+    });
+    
+    observer.observe(container, { attributes: true });
+    
+    // Добавляем слушатель для события завершения перетаскивания
+    document.addEventListener('dragend', function() {
+      // Вызываем функцию восстановления трекинга линейки, если она существует
+      if (window.restoreRulerTracker && typeof window.restoreRulerTracker === 'function') {
+        window.restoreRulerTracker();
+      }
+    });
+    
+    // Инициализируем надлежащий курсор при запуске
+    setTimeout(updateCursor, 100);
     
     return true;
   }

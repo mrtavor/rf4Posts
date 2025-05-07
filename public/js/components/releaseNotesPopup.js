@@ -38,9 +38,6 @@ export function checkReleaseNotes() {
                                typeof notes[0] === 'string' && 
                                notes[0].trim() === '-';
             
-            // Добавляем отладочный вывод
-            console.debug(`Release notes check: version=${version}, hasNotes=${hasReleaseNotes}, hasDashOnly=${hasDashOnly}, notes=${JSON.stringify(notes)}`);
-            
             // Обновляем версию в локальном хранилище в любом случае
             if (version && (!lastSeenVersion || lastSeenVersion !== version)) {
                 localStorage.setItem(VERSION_STORAGE_KEY, version);
@@ -55,8 +52,7 @@ export function checkReleaseNotes() {
             }
         })
         .catch(error => {
-            console.error('Ошибка при проверке релизных заметок:', error);
-            // Код для тестирования попапа закомментирован
+            // Игнорируем ошибку
         });
 }
 

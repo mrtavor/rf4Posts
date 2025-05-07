@@ -2,16 +2,16 @@ import { startVersionChecker } from '../version-management/versionChecker.js';
 import { initInactivityCheck } from '../components/inactivityPopup.js';
 import { checkReleaseNotes } from '../components/releaseNotesPopup.js';
 
-// Ініціалізуємо основні функції
+// Инициализируем основные функции
 document.addEventListener('DOMContentLoaded', () => {
-  // Стандартна перевірка версії
+  // Стандартная проверка версии
   startVersionChecker({
-    checkInterval: 5 * 60 * 1000 // 5 хвилин
+    checkInterval: 5 * 60 * 1000 // 5 минут
   });
   
-  // Перевірка неактивності та необхідності оновлення
+  // Проверка неактивности и необходимости обновления
   initInactivityCheck();
   
-  // Перевірка нових приміток до релізу
+  // Проверка новых примечаний к релизу
   checkReleaseNotes();
 });

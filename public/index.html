@@ -21,7 +21,7 @@
         </div>
         <div id="telegram-channel-link">
             <a href="https://t.me/rf4postts">
-                <img src="images/telegram_logo.svg">
+                <img src="images/svg/telegram_logo.svg">
                 <span>Телеграм канал</span>
             </a>
         </div>
@@ -49,9 +49,11 @@
             </div>
             <div id="adds" title="Єто просто шутка =)" data-delayed-alt="Но если вы серьезно заинтересованы, то пишите в телеграм">Здесь может быть ваша реклама</div>
             <script>
-                setTimeout(() => {
-                    document.getElementById('adds').title = document.getElementById('adds').dataset.delayedAlt;
-                }, 1000);
+                document.getElementById('adds').addEventListener('mouseenter', () => {
+                    setTimeout(() => {
+                        document.getElementById('adds').title = document.getElementById('adds').dataset.delayedAlt;
+                    }, 1000);
+                });
             </script>
         </div>
     </div>

@@ -23,6 +23,7 @@
     color: #1976d2;
     text-decoration: none;
     font-weight: bold;
+    cursor: pointer;
 }
 .post-link:hover {
     text-decoration: underline;
@@ -50,4 +51,264 @@
 
 .right-section::-webkit-scrollbar-thumb:hover {
     background: #555;
+}
+
+.post.highlight {
+    animation: highlight-post 2s ease-out;
+}
+
+@keyframes highlight-post {
+    0% { background-color: rgba(75, 108, 183, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* Стилі для табів */
+.tabs {
+    display: flex;
+    gap: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-button {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: #979797;
+    border-radius: 8px 8px 0 0;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    background-color: #f5f5f5;
+    }
+
+.tab-button.active {
+    color: #647ec1;
+    background-color: #f0f4ff;
+    font-weight: 500;
+}
+
+/* Стилі для контейнера фільтрів риб */
+.fish-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Стилі для кнопок-чіпів фільтрів риб */
+.fish-filter-chip {
+    background-color: #f0f0f0;
+    border: 1px solid #ededed;
+    border-radius: 20px;
+    padding: 5px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #959595;
+}
+
+.fish-filter-chip:hover {
+    background-color: #e8e8e8;
+}
+
+.fish-filter-chip.active {
+    background-color: #668ed4;
+    color: white;
+    border-color: #4f68a2;
+    box-shadow: 0 0px 8px #658dd153;
+}
+
+.fish-filter-chip.active:hover {
+    background-color: #5a82c7;
+}
+
+/* Стилі для неактивних фільтрів риб */
+.fish-filter-chip.unavailable {
+    opacity: 0.6;
+    position: relative;
+}
+
+.fish-filter-chip.unavailable::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background-color: #999;
+}
+
+/* Видалення чорної обводки після активації дропдауна */
+.fish-filter-bar:focus,
+.fish-filter-bar:focus-within,
+.fish-filter-chip:focus,
+.fish-filter-chip:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 2px rgba(180, 180, 180, 0.3) !important;
+}
+
+/* Стилі для існуючого контейнера фільтрів */
+.filter-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    position: relative;
+}
+
+/* Стилі для контейнера дій з фільтрами */
+.filter-actions-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* Стилі для кнопки очищення фільтрів */
+.clear-filters-btn {
+    background-color: #fff2f2;
+    border: 2px solid #f7e4e4;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    color: #b36666;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.clear-filters-btn:hover {
+    background-color: #ffe6e6;
+    color: #b36666;
+}
+
+.clear-filters-btn.hidden {
+    display: none;
+}
+
+/* Стилі для хрестика закриття в фільтрі */
+.filter-close {
+    margin-left: 6px;
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 14px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.fish-filter-chip .filter-close:hover {
+    color: #d65353;
+}
+
+/* Змінюємо стилі для кнопки додавання фільтра */
+#add-filter-btn {
+    padding: 10px;
+    background-color: #f2f7ff;
+    border: 2px solid #e4e9f7;
+    border-radius: 10px;
+    cursor: pointer;
+    text-align: left;
+    font-size: 14px;
+    color: #6687b3;
+    transition: all 0.3s ease;
+    width: 170px;
+    text-align: center;
+    font-weight: 500;
+}
+
+#add-filter-btn:hover {
+        background-color: #e3f2fd;
+    color: #6687b3;
+}
+
+#filter-dropdown {
+    width: 100%;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: absolute;
+    z-index: 0;
+    transform-origin: top center;
+    top: 100%;
+    transition: opacity 0.3s ease-in-out;
+}
+
+#filter-dropdown.hidden {
+    opacity: 0;
+    pointer-events: none;
+    display: block;
+}
+
+.filter-section {
+    margin-bottom: 15px;
+}
+
+.filter-section h3 {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+.filter-section select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Стилі для елементів, що повинні бути приховані (крім filter-dropdown) */
+.clear-filters-btn.hidden, 
+#baits-container.hidden,
+.no-posts-message.hidden {
+    display: none;
+}
+
+/* Стилі для повідомлення про відсутність постів */
+.no-posts-message {
+    background-color: #f8f8f8;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 30px 20px;
+    text-align: center;
+    color: #666;
+    font-size: 16px;
+    margin: 20px 0;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    }
+
+.no-posts-message:not(.hidden) {
+    display: flex;
+}
+
+.reset-filters-btn {
+    background-color: #4b6cb7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+.reset-filters-btn:hover {
+    background-color: #3b5998;
+}
+
+/* Додаємо стилі для анімації контейнера постів */
+#posts-container {
+    position: relative;
+    will-change: transform;
+    padding-bottom: 8px;
 }
